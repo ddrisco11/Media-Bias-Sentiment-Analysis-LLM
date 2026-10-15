@@ -134,48 +134,74 @@ def import_sample(cache, output, accounts, per_outlet=500):
         selected.extend(ranked[:per_outlet])
     if len(selected) != len(accounts) * per_outlet:
         raise ValueError('Insufficient unique tweets for requested sample size')
-    full_cache = cache / 'full_rows'
-    full_cache.mkdir(exist_ok=True)
-    def fetch(match):
-        path = full_cache / (match['tweet_id'] + '.json')
+    from collections import defaultdict
+    import math
+    grouped = defaultdict(list)
+    for match in selected:
+        grouped[match['file']].append(match)
+    shard_cache = cache / 'selected_rows'
+    shard_cache.mkdir(exist_ok=True)
+    def fetch_shard(item):
+        filename, matches = item
+        path = shard_cache / (filename + '.json')
+        expected = sorted(m['tweet_id'] for m in matches)
         if path.exists():
-            response = json.loads(path.read_text())
-        else:
-            params = {'dataset': DATASET, 'config': 'default', 'split': 'train',
-                      'offset': match['global_row'], 'length': 1}
-            response = get_json('https://datasets-server.huggingface.co/rows?' + urllib.parse.urlencode(params))
-            path.write_text(json.dumps(response))
-        if len(response['rows']) != 1 or response['rows'][0]['truncated_cells']:
-            raise RuntimeError('Missing row or truncated cells; refusing incomplete raw data')
-        row = response['rows'][0]['row']
-        url_match = URL_PATTERN.match(row['url'])
-        if not url_match or url_match[1].lower() != match['account'] or url_match[2] != match['tweet_id']:
-            raise RuntimeError('Viewer row does not match pinned Parquet discovery')
-        if str(row['id']) != match['tweet_id']:
-            raise RuntimeError('Tweet ID mismatch')
-        return response['features'], row
-    raw, features = [], None
+            saved = json.loads(path.read_text())
+            if saved['ids'] == expected:
+                return saved
+        url = f'https://huggingface.co/datasets/{DATASET}/resolve/{REVISION}/default/train/{filename}'
+        with urllib.request.urlopen(urllib.request.Request(url, method='HEAD'), timeout=60) as response:
+            size = int(response.headers['Content-Length'])
+        remote = RemoteParquet(url, size)
+        # Source schemas vary, so read directly rather than use the lossy viewer schema.
+        # Pre-buffer only this selected shard's row group; never persist the full shard.
+        parquet = pq.ParquetFile(remote, pre_buffer=True)
+        table = parquet.read().take(pa.array([m['row'] for m in matches]))
+        records = table.to_pylist()
+        for match, row in zip(matches, records):
+            parsed = URL_PATTERN.match(row['url'])
+            if not parsed or parsed[1].lower() != match['account'] or parsed[2] != match['tweet_id']:
+                raise RuntimeError('Selected row does not match pinned discovery')
+            if str(row['id']) != match['tweet_id']:
+                raise RuntimeError('Tweet ID mismatch')
+            # JSON has no NaN: represent source floating missing values as null.
+            for key, value in row.items():
+                if isinstance(value, float) and not math.isfinite(value):
+                    row[key] = None
+        saved = {'ids': expected, 'records': records, 'bytes': remote.bytes_read,
+                 'schema': {field.name: str(field.type) for field in table.schema}}
+        path.write_text(json.dumps(saved, allow_nan=False))
+        return saved
+    records, schemas, bytes_read = {}, {}, 0
     with ThreadPoolExecutor(max_workers=6) as pool:
-        for index, (row_features, row) in enumerate(pool.map(lambda x: retry(fetch, x), selected), 1):
-            if features is not None and features != row_features:
-                raise RuntimeError('Inconsistent source schema')
-            features = row_features
-            raw.append(row)
-            if index % 100 == 0: print('IMPORTED', index, '/', len(selected), flush=True)
-    # Restore original scalar types, including exact 64-bit integer tweet IDs.
-    schema = pa.schema([(f['name'], pa.type_for_alias(f['type']['dtype'])) for f in features])
-    table = pa.Table.from_pylist(raw, schema=schema)
+        items = sorted(grouped.items())
+        for index, (item, saved) in enumerate(zip(items, pool.map(lambda x: retry(fetch_shard, x), items)), 1):
+            schemas[item[0]] = saved['schema']
+            bytes_read += saved['bytes']
+            for row in saved['records']:
+                records[str(row['id'])] = row
+            if index % 10 == 0:
+                print('IMPORTED SHARDS', index, '/', len(items), 'TWEETS', len(records),
+                      'TRANSFER_GB', round(bytes_read/1e9, 2), flush=True)
+    raw = [records[m['tweet_id']] for m in selected]
+    columns = sorted(set().union(*(row.keys() for row in raw)))
+    # Union keys, retain native integer/string values, and add null for absent fields.
     output.mkdir(parents=True, exist_ok=True)
-    pq.write_table(table, output / 'raw_tweets.parquet', compression='zstd')
+    raw_path = output / 'raw_tweets.jsonl'
+    with raw_path.open('w') as handle:
+        for row in raw:
+            handle.write(json.dumps({key: row.get(key) for key in columns},
+                                    ensure_ascii=False, allow_nan=False) + '\n')
     (output / 'selection.json').write_text(json.dumps(selected, indent=2) + '\n')
-    (output / 'source_schema.json').write_text(json.dumps(features, indent=2) + '\n')
+    (output / 'source_schema.json').write_text(json.dumps(schemas, indent=2) + '\n')
     manifest = {k: discovery[k] for k in ('dataset', 'revision', 'source_revision', 'files', 'rows', 'counts')}
     manifest.update({'selected_accounts': accounts, 'tweets_per_outlet': per_outlet,
-                     'sample_size': len(raw), 'raw_columns': table.num_columns,
+                     'sample_size': len(raw), 'raw_columns': columns,
                      'sampling': 'First occurrence per URL tweet ID; lowest SHA256(media-sample-v1:<tweet_id>) per account',
-                     'raw_sha256': hashlib.sha256((output / 'raw_tweets.parquet').read_bytes()).hexdigest()})
+                     'normalization': 'Union of source columns; absent columns and non-finite floats represented as null. Integer IDs preserved exactly.',
+                     'selected_shards': len(items), 'raw_sha256': hashlib.sha256(raw_path.read_bytes()).hexdigest()})
     (output / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
-    print('SAVED', len(raw), 'rows with', table.num_columns, 'columns', flush=True)
+    print('SAVED', len(raw), 'rows with', len(columns), 'columns', flush=True)
 
 
 def main():
