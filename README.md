@@ -12,8 +12,8 @@ Current development focuses on a balanced sample of news-account tweets from
 and ABC News. Raw records and classification outputs belong in `dataset/`.
 
 The old COCA broadcast datasets, the three legacy topic-analysis folders, and the
-original paper, drafts and plots have been removed from this repository's current tree. They remain available in
-Git history and in the linked starting project.
+original paper, drafts and plots have been removed from this repository's current
+tree. They remain available in Git history and in the linked starting project.
 
 The current modules classify political leaning and general topic independently.
 
@@ -43,6 +43,7 @@ The first call downloads the large model and its tokenizer into Hugging Face's
 normal cache outside the project; allow several GB of disk space and RAM.
 Inference runs locally on CPU by default; use `--device cuda:0` for a compatible
 GPU. Input text is not uploaded to an inference service or saved by this module.
+Dependencies are optional and installed separately for each module.
 
 ```python
 from political_leaning import PoliticalLeaningClassifier
