@@ -177,3 +177,14 @@ Classifier scores are not calibrated certainty or factual-accuracy ratings.
 
 Some original numeric `id` values were rounded upstream. The exact tweet ID parsed
 from `url` is used for sampling and joining results; raw IDs are never overwritten.
+
+### CSV Manifest
+
+`dataset/tweet_manifest.csv` contains one row per sampled tweet with these columns:
+`news_organization`, `tweet_id`, `raw_tweet`, `topic`, `political_leaning_label`,
+and `political_leaning_confidence`. The confidence is the winning left/center/right
+class score from the existing political-leaning module, not positive/negative
+emotional sentiment. Topic and leaning labels are model predictions, not manually
+verified ground-truth annotations. CSV quoting preserves commas, quotes and line
+breaks in raw tweet text. Run `python -m scripts.validate_media_dataset` to check
+coverage, balance, raw-field preservation and consistency between CSV and JSONL.

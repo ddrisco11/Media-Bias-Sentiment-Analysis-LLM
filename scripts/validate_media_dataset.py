@@ -1,6 +1,7 @@
 """Validate the completed five-outlet dataset and both classifier outputs."""
 from collections import Counter
 import hashlib
+import csv
 import json
 import math
 from pathlib import Path
@@ -59,11 +60,26 @@ def validate(root=Path('dataset')):
         text, field = input_text(raw_by_id[row['tweet_id']])
         require(row['text_field'] == field and row['input_characters'] == len(text) and
                 row['truncated'] == (len(text) > 1000), 'Topic input metadata mismatch')
+    with (root / 'tweet_manifest.csv').open(encoding='utf-8', newline='') as handle:
+        csv_rows = list(csv.DictReader(handle))
+    require(len(csv_rows) == 2500 and {r['tweet_id'] for r in csv_rows} == expected,
+            'CSV row count or IDs differ')
+    p_by_id = {r['tweet_id']: r for r in political}
+    t_by_id = {r['tweet_id']: r for r in topics}
+    for row in csv_rows:
+        key = row['tweet_id']
+        require(row['raw_tweet'] == input_text(raw_by_id[key])[0], 'CSV changed raw tweet text')
+        require(row['topic'] == t_by_id[key]['topic'] and
+                row['political_leaning_label'] == p_by_id[key]['label'] and
+                float(row['political_leaning_confidence']) == p_by_id[key]['confidence'],
+                'CSV classifier result mismatch')
+    require(sorted(Counter(r['news_organization'] for r in csv_rows).values()) == [500]*5,
+            'CSV organization counts are not balanced')
     checksum = hashlib.sha256((root / 'raw_tweets.jsonl').read_bytes()).hexdigest()
     require(checksum == manifest['raw_sha256'] == run['raw_sha256'], 'Raw checksum mismatch')
     result = {'status': 'passed', 'tweets': len(raw), 'unique_tweet_ids': len(expected),
               'columns_preserved': len(columns), 'outlet_counts': dict(counts),
-              'political_results': len(political), 'topic_results': len(topics),
+              'political_results': len(political), 'topic_results': len(topics), 'csv_rows': len(csv_rows),
               'raw_sha256': checksum}
     (root / 'validation.json').write_text(json.dumps(result, indent=2) + '\n')
     print(json.dumps(result, indent=2))

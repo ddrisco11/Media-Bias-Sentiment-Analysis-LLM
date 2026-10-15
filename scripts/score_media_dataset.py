@@ -3,6 +3,7 @@
 Usage: python -m scripts.score_media_dataset --dataset dataset --device mps
 """
 import argparse
+import csv
 from collections import Counter, defaultdict
 import gc
 import hashlib
@@ -133,6 +134,21 @@ def main():
             'political_truncated': sum(political[key]['truncated'] for key in ids),
             'topic_truncated': sum(topics[key]['truncated'] for key in ids),
         }
+    organizations = {'nytimes': 'The New York Times', 'foxnews': 'Fox News',
+                     'reuters': 'Reuters', 'ap': 'Associated Press', 'abc': 'ABC News'}
+    with (root / 'tweet_manifest.csv').open('w', encoding='utf-8', newline='') as handle:
+        writer = csv.DictWriter(handle, fieldnames=[
+            'news_organization', 'tweet_id', 'raw_tweet', 'topic',
+            'political_leaning_label', 'political_leaning_confidence'], quoting=csv.QUOTE_ALL)
+        writer.writeheader()
+        for row in rows:
+            key = tweet_id(row)
+            writer.writerow({
+                'news_organization': organizations[accounts[key]], 'tweet_id': key,
+                'raw_tweet': texts[key][0], 'topic': topics[key]['topic'],
+                'political_leaning_label': political[key]['label'],
+                'political_leaning_confidence': political[key]['confidence'],
+            })
     write_json(root / 'summary.json', summary)
     print('COMPLETE', len(rows), 'tweets classified by both modules', flush=True)
 
