@@ -1,0 +1,3 @@
+-r requirements-political-leaning.txt
+-r requirements-topics.txt
+pyarrow>=20,<24
