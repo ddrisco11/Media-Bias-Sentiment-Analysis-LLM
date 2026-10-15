@@ -3,8 +3,9 @@
 This project continues from [KuvaKodes/Media-Bias-Sentiment-Analysis](https://github.com/KuvaKodes/Media-Bias-Sentiment-Analysis).
 The original study, **Quantifying Media Bias: Sentiment Analysis and Corpus
 Linguistics in Televised News Discourse**, was authored by **Kushaan Vardhan**,
-Department of Computational Linguistics, Georgetown University. Its Git history,
-paper and plots are retained for provenance.
+Department of Computational Linguistics, Georgetown University. Its Git history and
+paper are retained for provenance. Legacy study plots have been removed from
+this copy; they remain available in the linked starting project and Git history.
 
 Current development focuses on a balanced sample of news-account tweets from
 [deadbirds/usc-x-24-us-election-parquet](https://huggingface.co/datasets/deadbirds/usc-x-24-us-election-parquet):
