@@ -6,7 +6,7 @@ import math
 from pathlib import Path
 
 from scripts.media_dataset import URL_PATTERN
-from scripts.score_media_dataset import read_jsonl, input_text
+from scripts.score_media_dataset import read_jsonl, input_text, tweet_id
 from political_leaning.classifier import MODEL_ID as POLITICAL_MODEL
 from topic_classification.classifier import MODEL_ID as TOPIC_MODEL
 from topic_classification import DEFAULT_TOPICS
@@ -25,10 +25,10 @@ def validate(root=Path('dataset')):
         if not condition: raise ValueError(message)
     require(len(raw) == len(selected) == len(annotated) == len(political) == len(topics) == 2500,
             'Expected 2,500 rows in every data/result artifact')
-    raw_by_id = {str(row['id']): row for row in raw}
+    raw_by_id = {tweet_id(row): row for row in raw}
     require(len(raw_by_id) == 2500, 'Duplicate raw tweet IDs')
     expected = set(raw_by_id)
-    for name, records, id_field in [('selection', selected, 'tweet_id'), ('annotated', annotated, 'id'),
+    for name, records, id_field in [('selection', selected, 'tweet_id'), ('annotated', annotated, 'analysis_tweet_id'),
                                    ('political', political, 'tweet_id'), ('topics', topics, 'tweet_id')]:
         require({str(row[id_field]) for row in records} == expected, f'{name}: tweet ID set differs')
     counts = Counter(row['account'] for row in selected)
@@ -44,7 +44,7 @@ def validate(root=Path('dataset')):
                 'Author URL mismatch')
         input_text(row)
     for row in annotated:
-        require({key: row[key] for key in columns} == raw_by_id[str(row['id'])], 'Annotation modified raw data')
+        require({key: row[key] for key in columns} == raw_by_id[tweet_id(row)], 'Annotation modified raw data')
     for row in political:
         require(row['model'] == POLITICAL_MODEL and row['label'] in ('left', 'center', 'right'), 'Invalid political output')
         p = row['probabilities']

@@ -166,8 +166,6 @@ def import_sample(cache, output, accounts, per_outlet=500, workers=12):
             parsed = URL_PATTERN.match(row['url'])
             if not parsed or parsed[1].lower() != match['account'] or parsed[2] != match['tweet_id']:
                 raise RuntimeError('Selected row does not match pinned discovery')
-            if str(row['id']) != match['tweet_id']:
-                raise RuntimeError('Tweet ID mismatch')
             # JSON has no NaN: represent source floating missing values as null.
             for key, value in row.items():
                 if isinstance(value, float) and not math.isfinite(value):
@@ -185,7 +183,7 @@ def import_sample(cache, output, accounts, per_outlet=500, workers=12):
             schemas[item[0]] = saved['schema']
             bytes_read += saved['bytes']
             for row in saved['records']:
-                records[str(row['id'])] = row
+                records[URL_PATTERN.match(row['url'])[2]] = row
             if index % 10 == 0:
                 print('IMPORTED SHARDS', index, '/', len(items), 'TWEETS', len(records),
                       'TRANSFER_GB', round(bytes_read/1e9, 2), flush=True)
@@ -204,7 +202,8 @@ def import_sample(cache, output, accounts, per_outlet=500, workers=12):
     manifest.update({'selected_accounts': accounts, 'tweets_per_outlet': per_outlet,
                      'sample_size': len(raw), 'raw_columns': columns,
                      'sampling': 'First occurrence per URL tweet ID; lowest SHA256(media-sample-v1:<tweet_id>) per account',
-                     'normalization': 'Union of source columns; absent columns and non-finite floats represented as null. Integer IDs preserved exactly.',
+                     'normalization': 'Union of source columns; absent columns and non-finite floats represented as null. Raw ID values preserved; canonical tweet IDs come from URLs because some stored IDs were rounded upstream.',
+                     'raw_id_url_mismatches': sum(str(row['id']) != URL_PATTERN.match(row['url'])[2] for row in raw),
                      'selected_shards': len(items), 'raw_sha256': hashlib.sha256(raw_path.read_bytes()).hexdigest()})
     (output / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
     print('SAVED', len(raw), 'rows with', len(columns), 'columns', flush=True)

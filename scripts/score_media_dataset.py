@@ -12,6 +12,7 @@ from pathlib import Path
 import platform
 import time
 
+from scripts.media_dataset import URL_PATTERN
 from political_leaning import PoliticalLeaningClassifier
 from political_leaning.classifier import MODEL_ID as LEANING_MODEL
 from topic_classification import TopicClassifier, DEFAULT_TOPICS
@@ -24,6 +25,13 @@ def read_jsonl(path):
 
 def write_json(path, data):
     path.write_text(json.dumps(data, indent=2, ensure_ascii=False, allow_nan=False) + '\n')
+
+
+def tweet_id(row):
+    match = URL_PATTERN.match(row.get("url") or "")
+    if not match:
+        raise ValueError("Tweet URL has no canonical ID")
+    return match[2]
 
 
 def input_text(row):
@@ -46,11 +54,11 @@ def main():
     rows = read_jsonl(root / 'raw_tweets.jsonl')
     selection = json.loads((root / 'selection.json').read_text())
     accounts = {m['tweet_id']: m['account'] for m in selection}
-    if len({str(r['id']) for r in rows}) != len(rows):
+    if len({tweet_id(r) for r in rows}) != len(rows):
         raise ValueError('Raw tweet IDs are not unique')
-    if set(accounts) != {str(r['id']) for r in rows}:
+    if set(accounts) != {tweet_id(r) for r in rows}:
         raise ValueError('Selection and raw tweet IDs differ')
-    texts = {str(r['id']): input_text(r) for r in rows}
+    texts = {tweet_id(r): input_text(r) for r in rows}
     from huggingface_hub import try_to_load_from_cache
     def cached_revision(model):
         config = try_to_load_from_cache(model, 'config.json')
@@ -75,20 +83,20 @@ def main():
         if args.stage not in ('all', stage): continue
         path = root / (stage + '_scores.jsonl')
         done = {r['tweet_id'] for r in read_jsonl(path)} if path.exists() else set()
-        pending = [r for r in rows if str(r['id']) not in done]
+        pending = [r for r in rows if tweet_id(r) not in done]
         model = PoliticalLeaningClassifier(device=args.device) if stage == 'political' else TopicClassifier(device=args.device)
         started = time.monotonic()
         with path.open('a') as handle:
             for offset in range(0, len(pending), args.batch_size):
                 batch = pending[offset:offset + args.batch_size]
-                source = [texts[str(r['id'])][0] for r in batch]
+                source = [texts[tweet_id(r)][0] for r in batch]
                 if stage == 'political':
                     results = model.grade_many(source, truncate=True, batch_size=args.batch_size)
                 else:
                     results = model.classify_many([t[:MAX_CHARACTERS] for t in source], batch_size=args.batch_size)
                 for row, text, result in zip(batch, source, results):
-                    item = dict(tweet_id=str(row['id']), account=accounts[str(row['id'])],
-                                text_field=texts[str(row['id'])][1], **result.to_dict())
+                    item = dict(tweet_id=tweet_id(row), account=accounts[tweet_id(row)],
+                                text_field=texts[tweet_id(row)][1], **result.to_dict())
                     if stage == 'topic':
                         item.update(input_characters=len(text), truncated=len(text) > MAX_CHARACTERS)
                     handle.write(json.dumps(item, allow_nan=False) + '\n')
@@ -104,7 +112,7 @@ def main():
     paths = [root / f'{stage}_scores.jsonl' for stage in ('political', 'topic')]
     if not all(path.exists() for path in paths): return
     political, topics = ({r['tweet_id']: r for r in read_jsonl(path)} for path in paths)
-    expected = {str(row['id']) for row in rows}
+    expected = {tweet_id(row) for row in rows}
     if set(political) != expected or set(topics) != expected:
         print('One stage is incomplete; combined outputs not generated', flush=True)
         return
@@ -112,8 +120,8 @@ def main():
     annotated_path = root / 'annotated_tweets.jsonl'
     with annotated_path.open('w') as handle:
         for row in rows:
-            key = str(row['id'])
-            record = dict(row, analysis_account=accounts[key],
+            key = tweet_id(row)
+            record = dict(row, analysis_tweet_id=key, analysis_account=accounts[key],
                           political_leaning=political[key], topic_classification=topics[key])
             handle.write(json.dumps(record, ensure_ascii=False, allow_nan=False) + '\n')
     for account in sorted(set(accounts.values())):

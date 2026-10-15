@@ -166,7 +166,7 @@ then choose the 500 lowest SHA-256 hashes of `media-sample-v1:<tweet_id>` per ac
 This samples the available election-related dataset, not each outlet's complete
 posting history. Replies and quoted posts are not separately excluded.
 
-Raw JSONL retains the union of source fields and exact integer IDs; absent fields
+Raw JSONL retains the union of source fields and original ID values; absent fields
 and non-finite floating values become JSON null. Source field types are recorded
 per shard. Treat fields such as `user` as untrusted strings, not executable Python.
 The dataset's source card does not declare a license; source content and the
@@ -176,3 +176,6 @@ Scoring prefers `text`, falling back to `rawContent` only when text is missing o
 blank. Political inputs may be truncated to 512 tokens and topic inputs to 1,000
 characters; outputs explicitly flag either case. The raw records remain intact.
 Classifier scores are not calibrated certainty or factual-accuracy ratings.
+
+Some original numeric `id` values were rounded upstream. The exact tweet ID parsed
+from `url` is used for sampling and joining results; raw IDs are never overwritten.
