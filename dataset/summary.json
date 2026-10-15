@@ -1,0 +1,131 @@
+{
+  "abc": {
+    "tweets": 500,
+    "political_leaning": {
+      "right": 228,
+      "left": 267,
+      "center": 5
+    },
+    "topics": {
+      "healthcare": 13,
+      "crime and justice": 60,
+      "president": 203,
+      "elections": 104,
+      "gun issues": 41,
+      "foreign affairs": 24,
+      "reproductive rights": 4,
+      "gender rights": 6,
+      "economy": 9,
+      "education": 4,
+      "immigration": 15,
+      "race and civil rights": 12,
+      "environment": 2,
+      "technology": 3
+    },
+    "political_truncated": 0,
+    "topic_truncated": 0
+  },
+  "ap": {
+    "tweets": 500,
+    "political_leaning": {
+      "left": 204,
+      "right": 296
+    },
+    "topics": {
+      "elections": 123,
+      "gun issues": 52,
+      "president": 179,
+      "race and civil rights": 12,
+      "reproductive rights": 7,
+      "foreign affairs": 28,
+      "economy": 16,
+      "crime and justice": 43,
+      "immigration": 20,
+      "healthcare": 5,
+      "technology": 1,
+      "education": 7,
+      "gender rights": 5,
+      "environment": 2
+    },
+    "political_truncated": 0,
+    "topic_truncated": 0
+  },
+  "foxnews": {
+    "tweets": 500,
+    "political_leaning": {
+      "right": 435,
+      "left": 65
+    },
+    "topics": {
+      "president": 245,
+      "elections": 81,
+      "crime and justice": 20,
+      "race and civil rights": 16,
+      "gun issues": 53,
+      "foreign affairs": 28,
+      "immigration": 25,
+      "gender rights": 8,
+      "education": 8,
+      "economy": 9,
+      "healthcare": 3,
+      "environment": 1,
+      "reproductive rights": 2,
+      "technology": 1
+    },
+    "political_truncated": 0,
+    "topic_truncated": 0
+  },
+  "nytimes": {
+    "tweets": 500,
+    "political_leaning": {
+      "left": 357,
+      "right": 138,
+      "center": 5
+    },
+    "topics": {
+      "elections": 122,
+      "foreign affairs": 28,
+      "president": 170,
+      "gun issues": 42,
+      "immigration": 18,
+      "economy": 13,
+      "crime and justice": 50,
+      "healthcare": 7,
+      "race and civil rights": 15,
+      "reproductive rights": 6,
+      "environment": 4,
+      "technology": 11,
+      "gender rights": 10,
+      "education": 3,
+      "other": 1
+    },
+    "political_truncated": 0,
+    "topic_truncated": 0
+  },
+  "reuters": {
+    "tweets": 500,
+    "political_leaning": {
+      "left": 252,
+      "center": 29,
+      "right": 219
+    },
+    "topics": {
+      "gun issues": 47,
+      "elections": 113,
+      "crime and justice": 52,
+      "president": 137,
+      "race and civil rights": 8,
+      "economy": 24,
+      "foreign affairs": 73,
+      "immigration": 19,
+      "technology": 10,
+      "gender rights": 5,
+      "environment": 2,
+      "healthcare": 3,
+      "education": 2,
+      "reproductive rights": 5
+    },
+    "political_truncated": 0,
+    "topic_truncated": 0
+  }
+}

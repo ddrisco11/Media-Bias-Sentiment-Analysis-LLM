@@ -1,0 +1,17 @@
+{
+  "status": "passed",
+  "tweets": 2500,
+  "unique_tweet_ids": 2500,
+  "columns_preserved": 39,
+  "outlet_counts": {
+    "nytimes": 500,
+    "foxnews": 500,
+    "reuters": 500,
+    "ap": 500,
+    "abc": 500
+  },
+  "political_results": 2500,
+  "topic_results": 2500,
+  "csv_rows": 2500,
+  "raw_sha256": "fecc61ce682e917eb5372ff3d61ffe6139201d58f76ff0093bc4125bbd66bd81"
+}

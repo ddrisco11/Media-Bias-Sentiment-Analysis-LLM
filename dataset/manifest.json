@@ -72,5 +72,15 @@
   "normalization": "Union of source columns; absent columns and non-finite floats represented as null. Raw ID values preserved; canonical tweet IDs come from URLs because some stored IDs were rounded upstream.",
   "raw_id_url_mismatches": 985,
   "selected_shards": 715,
-  "raw_sha256": "fecc61ce682e917eb5372ff3d61ffe6139201d58f76ff0093bc4125bbd66bd81"
+  "raw_sha256": "fecc61ce682e917eb5372ff3d61ffe6139201d58f76ff0093bc4125bbd66bd81",
+  "source_language_counts": {
+    "en": 2478,
+    "es": 20,
+    "da": 1,
+    "fr": 1
+  },
+  "source_date_range": [
+    "2021-03-31",
+    "2024-11-30"
+  ]
 }
