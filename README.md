@@ -3,16 +3,16 @@
 This project continues from [KuvaKodes/Media-Bias-Sentiment-Analysis](https://github.com/KuvaKodes/Media-Bias-Sentiment-Analysis).
 The original study, **Quantifying Media Bias: Sentiment Analysis and Corpus
 Linguistics in Televised News Discourse**, was authored by **Kushaan Vardhan**,
-Department of Computational Linguistics, Georgetown University. Its Git history,
-paper and plots are retained for provenance.
+Department of Computational Linguistics, Georgetown University. Its paper and
+plots are available in the linked project and in this repository's Git history.
 
 Current development focuses on a balanced sample of news-account tweets from
 [deadbirds/usc-x-24-us-election-parquet](https://huggingface.co/datasets/deadbirds/usc-x-24-us-election-parquet):
 500 unique tweets each from New York Times, Fox News, Reuters, Associated Press,
 and ABC News. Raw records and classification outputs belong in `dataset/`.
 
-The old COCA broadcast datasets and the three legacy topic-analysis folders
-have been removed from this repository's current tree. They remain available in
+The old COCA broadcast datasets, the three legacy topic-analysis folders, and the
+original paper, drafts and plots have been removed from this repository's current tree. They remain available in
 Git history and in the linked starting project.
 
 The current modules classify political leaning and general topic independently.
@@ -43,7 +43,6 @@ The first call downloads the large model and its tokenizer into Hugging Face's
 normal cache outside the project; allow several GB of disk space and RAM.
 Inference runs locally on CPU by default; use `--device cuda:0` for a compatible
 GPU. Input text is not uploaded to an inference service or saved by this module.
-Dependencies are optional and do not affect the existing sentiment scripts.
 
 ```python
 from political_leaning import PoliticalLeaningClassifier
@@ -68,16 +67,11 @@ python -m unittest discover -s tests -v
 These tests use a simulated model backend; run a CLI example after installing
 dependencies to verify actual model inference on your machine.
 
-## Full Paper
-
-The complete write-up, including background, full methodology, results, and discussion, is available in **`KRV14FinalPaper.pdf`**.
-
 ## Optional GLiNER2 Topic Classifier
 
 `topic_classification` assigns one general topic to short English text using
 [`fastino/gliner2-base-v1`](https://huggingface.co/fastino/gliner2-base-v1), the
-GLiNER 2.0 checkpoint. It is independent of the sentiment analysis scripts and
-political-leaning classifier. No training dataset or API key is required.
+GLiNER 2.0 checkpoint. It is independent of the political-leaning classifier. No training dataset or API key is required.
 
 From the repository root, with Python 3.10+:
 
