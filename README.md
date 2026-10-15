@@ -4,18 +4,16 @@ This project continues from [KuvaKodes/Media-Bias-Sentiment-Analysis](https://gi
 The original study, **Quantifying Media Bias: Sentiment Analysis and Corpus
 Linguistics in Televised News Discourse**, was authored by **Kushaan Vardhan**,
 Department of Computational Linguistics, Georgetown University. Its Git history,
-paper, plots, and historical analysis scripts are retained for provenance.
+paper and plots are retained for provenance.
 
 Current development focuses on a balanced sample of news-account tweets from
 [deadbirds/usc-x-24-us-election-parquet](https://huggingface.co/datasets/deadbirds/usc-x-24-us-election-parquet):
 500 unique tweets each from New York Times, Fox News, Reuters, Associated Press,
 and ABC News. Raw records and classification outputs belong in `dataset/`.
 
-The old COCA broadcast concordance TXT and combined CSV datasets have been
-removed from this repository's current tree. Historical scripts in
-`DomesticIssue_GunReform/`, `ForeignIssue_MiddleEast/`, and
-`SocialIssue_WomensRights/` require the original data from the starting project;
-they are not part of the tweet pipeline. The removed data remains in Git history.
+The old COCA broadcast datasets and the three legacy topic-analysis folders
+have been removed from this repository's current tree. They remain available in
+Git history and in the linked starting project.
 
 The current modules classify political leaning and general topic independently.
 
