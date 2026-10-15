@@ -17,7 +17,7 @@ from scripts.media_dataset import URL_PATTERN
 from political_leaning import PoliticalLeaningClassifier
 from political_leaning.classifier import MODEL_ID as LEANING_MODEL
 from topic_classification import TopicClassifier, DEFAULT_TOPICS
-from topic_classification.classifier import MODEL_ID as TOPIC_MODEL, MAX_CHARACTERS
+from topic_classification.classifier import MODEL_ID as TOPIC_MODEL, MAX_CHARACTERS, TOPIC_POLICY_VERSION
 
 
 def read_jsonl(path):
@@ -70,6 +70,7 @@ def main():
         'raw_sha256': hashlib.sha256((root / 'raw_tweets.jsonl').read_bytes()).hexdigest(),
         'models': {m: cached_revision(m) for m in (LEANING_MODEL, TOPIC_MODEL)},
         'topics': DEFAULT_TOPICS,
+        'topic_policy_version': TOPIC_POLICY_VERSION,
         'processing': {'political_truncation_tokens': 512, 'topic_truncation_characters': MAX_CHARACTERS,
                        'text_preference': ['text', 'rawContent']},
         'device': args.device,

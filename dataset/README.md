@@ -66,3 +66,20 @@ README for installation and reproduction commands.
 The completed run produced both predictions for every one of the 2,500 tweets.
 No tweet text was truncated by either classifier. All dataset and CSV integrity
 checks passed; the results are recorded in `validation.json`.
+
+## Topic revision (2026-10-15)
+
+All 2,500 topic predictions were rerun with compact, issue-specific definitions.
+The default classifier reranks a gun-issues prediction without an explicit
+firearm/shooting cue using the remaining categories. This conservative lexical
+guard may miss implicit references; it is not a politicalness filter. Confidence
+after reranking is conditional on the remaining categories. Topic JSONL records
+include a `reranked` flag. Custom taxonomies
+are not subject to this guard. Political-leaning outputs and raw records were
+retained unchanged. This is a targeted error correction, not a measured accuracy
+benchmark; overlapping presidential/election stories still require review.
+
+The revision changed 351 topic labels (14.04%) and reranked 88 unsupported gun
+predictions. Diagnostic examples and known limitations are recorded in
+`topic_revision_checks.json`. The Native American citizenship example remains
+classified as immigration and still needs review.

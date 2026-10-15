@@ -9,7 +9,7 @@ from pathlib import Path
 from scripts.media_dataset import URL_PATTERN
 from scripts.score_media_dataset import read_jsonl, input_text, tweet_id
 from political_leaning.classifier import MODEL_ID as POLITICAL_MODEL
-from topic_classification.classifier import MODEL_ID as TOPIC_MODEL
+from topic_classification.classifier import MODEL_ID as TOPIC_MODEL, TOPIC_POLICY_VERSION, GUN_EVIDENCE
 from topic_classification import DEFAULT_TOPICS
 
 
@@ -32,6 +32,8 @@ def validate(root=Path('dataset')):
     for name, records, id_field in [('selection', selected, 'tweet_id'), ('annotated', annotated, 'analysis_tweet_id'),
                                    ('political', political, 'tweet_id'), ('topics', topics, 'tweet_id')]:
         require({str(row[id_field]) for row in records} == expected, f'{name}: tweet ID set differs')
+    require(run['topics'] == DEFAULT_TOPICS and run.get('topic_policy_version') == TOPIC_POLICY_VERSION,
+            'Topic definitions or policy version differ from this checkout')
     counts = Counter(row['account'] for row in selected)
     require(set(counts) == set(manifest['selected_accounts']) and all(v == 500 for v in counts.values()),
             'Sample is not balanced at 500 per outlet')
@@ -58,6 +60,8 @@ def validate(root=Path('dataset')):
         require(row['model'] == TOPIC_MODEL and row['topic'] in DEFAULT_TOPICS, 'Invalid topic output')
         require(math.isfinite(row['confidence']) and 0 <= row['confidence'] <= 1, 'Invalid topic confidence')
         text, field = input_text(raw_by_id[row['tweet_id']])
+        require(row['topic'] != 'gun issues' or GUN_EVIDENCE.search(text),
+                'Gun topic lacks the required explicit evidence')
         require(row['text_field'] == field and row['input_characters'] == len(text) and
                 row['truncated'] == (len(text) > 1000), 'Topic input metadata mismatch')
     with (root / 'tweet_manifest.csv').open(encoding='utf-8', newline='') as handle:

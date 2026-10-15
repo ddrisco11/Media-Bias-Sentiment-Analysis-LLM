@@ -102,7 +102,10 @@ print(result.to_dict())
 The default labels are president, gun issues, gender rights, reproductive rights,
 immigration, economy, elections, foreign affairs, healthcare, environment,
 crime and justice, education, race and civil rights, technology, and other.
-Definitions are in `topic_classification/topics.py`. Intended examples include
+Definitions are in `topic_classification/topics.py`. The default taxonomy uses
+compact issue descriptions and reranks unsupported gun-issues predictions when
+no explicit firearm/shooting cue appears. This conservative guard can miss implicit
+references; reranked confidence is conditional on the remaining categories. Intended examples include
 Donald Trump → president, mass shootings → gun issues, and transgender rights
 → gender rights. These guide the model rather than imposing keyword rules.
 Overlapping subjects can receive different labels depending on context; inspect

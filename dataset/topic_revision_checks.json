@@ -1,0 +1,49 @@
+{
+  "topic_policy_version": "compact-topics-gun-evidence-v2",
+  "tweets_reclassified": 2500,
+  "changed_topics": 351,
+  "gun_predictions_reranked": 88,
+  "checks": [
+    {
+      "tweet_id": "1861152929706655905",
+      "previous": "gender rights",
+      "updated": "healthcare"
+    },
+    {
+      "tweet_id": "1821672746926961032",
+      "previous": "gun issues",
+      "updated": "president"
+    },
+    {
+      "tweet_id": "1788248852895523041",
+      "previous": "gun issues",
+      "updated": "other"
+    },
+    {
+      "tweet_id": "1854266225955635631",
+      "previous": "education",
+      "updated": "president"
+    },
+    {
+      "tweet_id": "1797032916804866526",
+      "previous": "immigration",
+      "updated": "immigration"
+    },
+    {
+      "tweet_id": "1815096843694444846",
+      "previous": "race and civil rights",
+      "updated": "elections"
+    },
+    {
+      "tweet_id": "1825993748267913261",
+      "previous": "other",
+      "updated": "president"
+    }
+  ],
+  "limitations": [
+    "Targeted diagnostic examples, not a held-out accuracy benchmark.",
+    "Presidential and election categories overlap.",
+    "Lexical gun guard can miss implicit firearm references.",
+    "Political-leaning outputs retained unchanged."
+  ]
+}
