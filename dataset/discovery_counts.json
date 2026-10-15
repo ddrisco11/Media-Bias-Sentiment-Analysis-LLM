@@ -1,0 +1,29 @@
+{
+  "dataset": "deadbirds/usc-x-24-us-election-parquet",
+  "revision": "d0d93f9a457e54d21cb6c51ec9340548fa77c9cc",
+  "source_revision": "d8fc6f7d2510d89c78f6175601055288f643a898",
+  "files": 834,
+  "rows": 40072625,
+  "counts": {
+    "nytimes": 913,
+    "foxnews": 2274,
+    "reuters": 1275,
+    "ap": 543,
+    "nbcnews": 685,
+    "abc": 1273,
+    "cbsnews": 1051,
+    "bbcworld": 138,
+    "cnn": 158,
+    "washingtonpost": 1229,
+    "usatoday": 583,
+    "wsj": 766
+  },
+  "selected_accounts": [
+    "nytimes",
+    "foxnews",
+    "reuters",
+    "ap",
+    "abc"
+  ],
+  "sample_size_per_account": 500
+}

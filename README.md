@@ -139,3 +139,40 @@ RUN_GLINER_MODEL_TESTS=1 python -m unittest discover -s tests -p test_topics_mod
 
 These three examples passed with the actual checkpoint during implementation;
 they are smoke checks, not an accuracy benchmark.
+
+## Reproducing the Tweet Dataset
+
+The qualifying main accounts are `@nytimes`, `@FoxNews`, `@Reuters`, `@AP`, and
+`@ABC`. `dataset/discovery_counts.json` records distinct URL tweet IDs counted
+across all 834 source shards (40,072,625 rows), including other candidate outlets.
+
+Install the combined dependencies, then run from the repository root:
+
+```sh
+python -m pip install -r requirements-dataset.txt
+python -m scripts.media_dataset --cache /path/outside/repo/media-cache
+python -m scripts.media_dataset --cache /path/outside/repo/media-cache --import-sample
+python -m scripts.score_media_dataset --dataset dataset --device cpu
+```
+
+Use `--device mps` for Apple Silicon or `--device cuda:0` for an available CUDA
+GPU. Both models must be loaded once before scoring so their cached revisions
+can be recorded; the module usage examples above perform that initialization.
+
+Discovery reads only URL columns. Import retrieves the selected source shards
+because the viewer API cannot preserve their heterogeneous schemas. Only selected
+records are retained locally. Sampling is deterministic: deduplicate by tweet ID,
+then choose the 500 lowest SHA-256 hashes of `media-sample-v1:<tweet_id>` per account.
+This samples the available election-related dataset, not each outlet's complete
+posting history. Replies and quoted posts are not separately excluded.
+
+Raw JSONL retains the union of source fields and exact integer IDs; absent fields
+and non-finite floating values become JSON null. Source field types are recorded
+per shard. Treat fields such as `user` as untrusted strings, not executable Python.
+The dataset's source card does not declare a license; source content and the
+political model's CC BY-NC 4.0 terms should be considered before redistribution.
+
+Scoring prefers `text`, falling back to `rawContent` only when text is missing or
+blank. Political inputs may be truncated to 512 tokens and topic inputs to 1,000
+characters; outputs explicitly flag either case. The raw records remain intact.
+Classifier scores are not calibrated certainty or factual-accuracy ratings.

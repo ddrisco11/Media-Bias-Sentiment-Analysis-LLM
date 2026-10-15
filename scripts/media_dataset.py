@@ -117,7 +117,7 @@ def discover(cache):
 
 
 
-def import_sample(cache, output, accounts, per_outlet=500):
+def import_sample(cache, output, accounts, per_outlet=500, workers=12):
     discovery = json.loads((cache / 'discovery.json').read_text())
     if len(accounts) != 5 or len(set(accounts)) != 5 or not {'nytimes', 'foxnews'} <= set(accounts):
         raise ValueError('Choose five distinct accounts including nytimes and foxnews')
@@ -173,7 +173,7 @@ def import_sample(cache, output, accounts, per_outlet=500):
         path.write_text(json.dumps(saved, allow_nan=False))
         return saved
     records, schemas, bytes_read = {}, {}, 0
-    with ThreadPoolExecutor(max_workers=6) as pool:
+    with ThreadPoolExecutor(max_workers=workers) as pool:
         items = sorted(grouped.items())
         for index, (item, saved) in enumerate(zip(items, pool.map(lambda x: retry(fetch_shard, x), items)), 1):
             schemas[item[0]] = saved['schema']
