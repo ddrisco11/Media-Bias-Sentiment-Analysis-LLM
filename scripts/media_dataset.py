@@ -89,15 +89,19 @@ def scan_file(entry):
 
 def discover(cache):
     cache.mkdir(parents=True, exist_ok=True)
-    manifest = get_json('https://datasets-server.huggingface.co/parquet?' + urllib.parse.urlencode({'dataset': DATASET}))
-    files = sorted(manifest['parquet_files'], key=lambda x: x['filename'])
-    if manifest.get('partial') or manifest.get('failed') or manifest.get('pending'):
-        raise RuntimeError('Dataset manifest is incomplete')
+    tree = get_json(f'https://huggingface.co/api/datasets/{DATASET}/tree/{REVISION}/default/train?limit=1000')
+    files = sorted([{'filename': Path(x['path']).name, 'size': x['size']}
+                    for x in tree if x['type'] == 'file' and x['path'].endswith('.parquet')],
+                   key=lambda x: x['filename'])
+    if len(files) != 834:
+        raise RuntimeError('Pinned dataset manifest is incomplete')
     def cached_scan(entry):
         path = cache / (entry['filename'] + '.json')
         if path.exists(): return json.loads(path.read_text())
         result = retry(scan_file, entry)
-        path.write_text(json.dumps(result))
+        temporary = path.with_suffix('.tmp')
+        temporary.write_text(json.dumps(result))
+        temporary.replace(path)
         return result
     found, offset = [], 0
     with ThreadPoolExecutor(max_workers=6) as pool:
@@ -170,7 +174,9 @@ def import_sample(cache, output, accounts, per_outlet=500, workers=12):
                     row[key] = None
         saved = {'ids': expected, 'records': records, 'bytes': remote.bytes_read,
                  'schema': {field.name: str(field.type) for field in table.schema}}
-        path.write_text(json.dumps(saved, allow_nan=False))
+        temporary = path.with_suffix('.tmp')
+        temporary.write_text(json.dumps(saved, allow_nan=False))
+        temporary.replace(path)
         return saved
     records, schemas, bytes_read = {}, {}, 0
     with ThreadPoolExecutor(max_workers=workers) as pool:
