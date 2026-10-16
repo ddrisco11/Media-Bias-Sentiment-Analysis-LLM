@@ -1,0 +1,13 @@
+{
+  "inputs_sha256": {
+    "reports/v1/scored_generations.jsonl": "a36fd55e624cb5ea47808fdcfac4698a4d2ee8d8a30adae5ec055e5765c89df1",
+    "dataset/annotated_tweets.jsonl": "2ac02cb334ddcb4a5b4fe0ddc82e85167ec5467e84fe93a676aa2241523b1f18",
+    "dataset/synthetic/main-v1/run_manifest.json": "383ac71f0e2c7b07db022eb7051e2ad866a2e1154bc9c77d5ff2021f324bcd66"
+  },
+  "report_script_sha256": "7793df6302b3f18e3ea0bce07f8ff95eda2de5cf6708a91bef2b8d46923ef1bb",
+  "python": "3.14.3",
+  "packages": {
+    "matplotlib": "3.11.2",
+    "numpy": "2.5.4"
+  }
+}

@@ -17,6 +17,13 @@ tree. They remain available in Git history and in the linked starting project.
 
 The current modules classify political leaning and general topic independently.
 
+## Synthetic classification results
+
+[V1Results.md](V1Results.md) reports both classifier runs on the Haiku main and
+pilot datasets, including topic prompt agreement, political-leaning distributions,
+real-tweet comparisons, data-quality sensitivity checks, and graphs. Requested
+topics are proxy references; the synthetic data has no human leaning labels.
+
 ## Optional Political-Leaning Classifier
 
 The independent `political_leaning` module grades an English passage using

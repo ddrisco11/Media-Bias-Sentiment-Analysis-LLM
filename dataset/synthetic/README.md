@@ -74,7 +74,8 @@ Each run lives in its own directory:
     tweets.
   - The median length is about 250 characters, and 28% of thinking-off tweets exceed
     280.
-- **Not yet done.** The tweets have not been scored by the leaning or topic classifiers.
+- **Classifier results.** Both classifiers have now scored all 840 responses. See
+  [V1Results.md](../../V1Results.md) for the pilot thinking comparison.
 
 ### main-v1 (2026-10-16 UTC)
 
@@ -103,4 +104,6 @@ Each run lives in its own directory:
   - The Fox voice names a party least often (21%, against 37% for AP).
   - The party keyword lists are crude; for example, "Harris County" counts as a
     Democrat mention (3 tweets).
-- **Not yet done.** No classifier scoring, no five-voice set, and no hand labels.
+- **Classifier results.** Both classifiers have now scored all 3,150 responses. See
+  [V1Results.md](../../V1Results.md) for metrics and graphs. There are still no
+  human labels; all six requested voices, including the neutral baseline, are retained.

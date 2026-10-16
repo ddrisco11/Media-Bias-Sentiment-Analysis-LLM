@@ -1,0 +1,54 @@
+{
+  "sources": {
+    "dataset/synthetic/main-v1/generations.jsonl": {
+      "sha256": "fa2b185a5d5eaad1fece746268c054e1b6759b657b99935281f419d6fd553b93",
+      "rows": 3150
+    },
+    "dataset/synthetic/pilot-v1/generations.jsonl": {
+      "sha256": "aac380f902420b40637cdca4655a6795b98a7ab6f459a1f6337b704f4cda2e31",
+      "rows": 840
+    }
+  },
+  "models": {
+    "matous-volf/political-leaning-deberta-large": "36e135e33c24d2a1f6dbdb0eaa774d09e8dfb079",
+    "fastino/gliner2-base-v1": "f9634218e53580c56edf0de97ca1a7d3f1c2354e"
+  },
+  "topic_policy_version": "compact-topics-gun-evidence-v2",
+  "topics": {
+    "president": "Presidents, presidential candidates, speeches, rallies, debates, appointments and personal news.",
+    "gun issues": "Firearms, mass shootings, gun violence, gun control and gun ownership.",
+    "gender rights": "Transgender rights, LGBTQ rights, sexism and gender discrimination.",
+    "reproductive rights": "Abortion, contraception, IVF and reproductive freedom.",
+    "immigration": "Migrants, asylum, refugees, deportation and border security.",
+    "economy": "Inflation, jobs, prices, tariffs, spending and economic policy.",
+    "elections": "Voting, ballots, polls, election results, turnout and campaign fundraising.",
+    "foreign affairs": "Wars, diplomacy, international relations and foreign aid.",
+    "healthcare": "Public health, fluoride, vaccines, diseases, medicines and health insurance.",
+    "environment": "Climate, pollution, conservation and energy policy.",
+    "crime and justice": "Criminal trials, convictions, investigations, policing and corruption.",
+    "education": "Teaching, school policy, student loans and education funding.",
+    "race and civil rights": "Racism, racial equality, Native American rights and racial discrimination.",
+    "technology": "AI, internet platforms, cybersecurity, spaceflight and digital privacy.",
+    "other": "Religion, sports, entertainment and everyday life."
+  },
+  "classifier_code_sha256": {
+    "political_leaning/classifier.py": "a6c11481b69a0a808ff6e97e3823cee2a8b8bd14a19fdd4f13a4d5ea197baead",
+    "topic_classification/classifier.py": "af673b53b7cf2e758df2aa2a1579b2496deea66b34b9dcfdd0d3fa99f51a51d8",
+    "topic_classification/topics.py": "b0eea0f4412da15db4c27f28daa16b446af79d11fde7dc41220dfa07f575f146",
+    "scripts/score_synthetic_dataset.py": "0eeb8f5917e40c8c1341936bcbe67e83ad772a2d45999dd4784d2b8de9cf8aa1"
+  },
+  "device": "mps",
+  "batch_size": 8,
+  "python": "3.14.3",
+  "packages": {
+    "torch": "2.14.1",
+    "transformers": "4.57.6",
+    "gliner2": "2.1.0",
+    "sentencepiece": "0.2.2"
+  },
+  "input_policy": "Original generated text only; no prompts, outlet names or thinking summaries added. All nonempty responses scored, including flagged declines.",
+  "truncation": {
+    "political_tokens": 512,
+    "topic_characters": 1000
+  }
+}

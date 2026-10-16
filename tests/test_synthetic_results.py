@@ -28,10 +28,11 @@ class SyntheticResultTests(unittest.TestCase):
         self.assertAlmostEqual(result['mean_leaning_confidence'],.5)
 
     def test_topic_weighting_uses_cells_not_oversampled_rows(self):
-        rows=[row(t,t,left=.1,center=.1,right=.8) for t in TOPICS]
-        target={t:1 for t in TOPICS}
+        rows=[row(t,t,left=.8 if t=='president' else .1,center=.1,right=.1 if t=='president' else .8) for t in TOPICS]
+        target={t:9 if t=='president' else 1 for t in TOPICS}
         original=weighted(rows,target)
-        rows.extend([row('president','president',left=.1,center=.1,right=.8)]*50)
+        self.assertAlmostEqual(original['mean_signed_score'],(-.7*9+.7*13)/22)
+        rows.extend([row('president','president',left=.8,center=.1,right=.1)]*50)
         self.assertAlmostEqual(weighted(rows,target)['mean_signed_score'],original['mean_signed_score'])
         self.assertAlmostEqual(weighted(rows,target)['match_rate'],1)
         missing=[r for r in rows if r['topic']!='elections']

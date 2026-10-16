@@ -140,7 +140,7 @@ def plots(root, main, pilot, real, metrics):
     ax.set_yticks(range(len(TOPICS)),[f'{t} (n={sum(matrix[t].values())})' for t in TOPICS])
     for i in range(len(TOPICS)):
         for j in range(len(predicted)):
-            if arr[i,j]: ax.text(j,i,f'{frac[i,j]:.0f}',ha='center',va='center',fontsize=8,color='white' if frac[i,j]>55 else '#17202a')
+            if arr[i,j]: ax.text(j,i,('<1' if frac[i,j]<1 else f'{frac[i,j]:.0f}'),ha='center',va='center',fontsize=8,color='white' if frac[i,j]>55 else '#17202a')
     ax.set(xlabel='Predicted topic',ylabel='Requested generation topic',title='Main run: topic prompt agreement\nRow percentages; requested topics are not human-verified truth')
     fig.colorbar(im,ax=ax,shrink=.7,label='Row share (%)');save(fig,'topic_confusion.png')
     fig,ax=plt.subplots(figsize=(10,6),layout='constrained')
@@ -228,6 +228,8 @@ def main():
         'packages':{p:importlib.metadata.version(p) for p in ('matplotlib','numpy')},
     })
     plots(root,main_rows,pilot,real,metrics)
+    confusions=Counter((r['topic'],r['topic_classification']['topic']) for r in main_rows if r['topic']!=r['topic_classification']['topic'])
+    confusion_text='; '.join(f'{requested} → {predicted}: {count}' for (requested,predicted),count in confusions.most_common(3))
     pct=lambda x:f'{100*x:.1f}%'
     score=lambda x:f'{100*x:+.1f}'
     lines=['# V1 Results: Haiku Synthetic News Classification','',
@@ -245,6 +247,8 @@ def main():
         '- The signed score is `100 × mean[P(right) − P(left)]`, ranging from −100 to +100. It is not confidence, bias intensity, or an outlet rating.',
         '- Weighted synthetic results average each requested-topic cell using the main-generation manifest’s pooled real-topic frequencies, excluding “other.” This corrects the minimum-10-per-topic oversampling. The weighting source hash was checked. It does not correct differences in genre, events, language, or framing.', '',
         '## Main-run topic results','',
+        f'The largest requested→predicted mismatches are **{confusion_text}**. Only **{metrics["main"]["agreement"]["per_topic"]["president"]["matched"]} of {metrics["main"]["agreement"]["per_topic"]["president"]["n"]}** responses requested under president were classified as president. This near-total failure to recover that category is a major limitation of this baseline on these synthetic texts.', '',
+        'A spot-check of presidential examples found generic campaign roundups listing immigration alongside the economy and other issues. Some election labels are defensible, but selecting immigration from such a list may fail to capture the overall subject. These results require human review of both prompt adherence and classifier behavior; they should not be dismissed as generator drift alone.', '',
         '![Main topic prompt agreement](reports/v1/figures/topic_agreement.png)','',
         '| Requested topic | N | Precision* | Recall / match* | F1* |','|---|---:|---:|---:|---:|']
     for t,d in metrics['main']['agreement']['per_topic'].items():

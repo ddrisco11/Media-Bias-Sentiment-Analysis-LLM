@@ -1,0 +1,17 @@
+{
+  "status": "passed",
+  "scored_responses": 3990,
+  "source_text_preserved": true,
+  "political_truncated": 0,
+  "topic_truncated": 0,
+  "sources": {
+    "dataset/synthetic/main-v1/generations.jsonl": {
+      "sha256": "fa2b185a5d5eaad1fece746268c054e1b6759b657b99935281f419d6fd553b93",
+      "rows": 3150
+    },
+    "dataset/synthetic/pilot-v1/generations.jsonl": {
+      "sha256": "aac380f902420b40637cdca4655a6795b98a7ab6f459a1f6337b704f4cda2e31",
+      "rows": 840
+    }
+  }
+}
