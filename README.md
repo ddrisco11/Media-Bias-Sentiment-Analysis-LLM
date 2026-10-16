@@ -1,28 +1,107 @@
-# Media Bias and Topic Analysis of News Tweets
+# Real vs. Expected News Tweets: Political-Leaning Analysis
 
-This project continues from [KuvaKodes/Media-Bias-Sentiment-Analysis](https://github.com/KuvaKodes/Media-Bias-Sentiment-Analysis).
-The original study, **Quantifying Media Bias: Sentiment Analysis and Corpus
-Linguistics in Televised News Discourse**, was authored by **Kushaan Vardhan**,
-Department of Computational Linguistics, Georgetown University. Its paper and
-plots are available in the linked project and in this repository's Git history.
+This project asks: **How does the political leaning of real news tweets differ
+from what an AI model expects those outlets to write?** We run the same
+political-leaning and topic classifiers over actual posts and Claude Haiku’s
+generated outlet-style tweets, then compare their outputs.
 
-Current development focuses on a balanced sample of news-account tweets from
-[deadbirds/usc-x-24-us-election-parquet](https://huggingface.co/datasets/deadbirds/usc-x-24-us-election-parquet):
-500 unique tweets each from New York Times, Fox News, Reuters, Associated Press,
-and ABC News. Raw records and classification outputs belong in `dataset/`.
+Here, **“expected” means Haiku-generated text in an outlet’s requested voice**.
+It is a model-generated baseline, not a forecast, a human judgment, or a standard
+for how the outlet should report. The project’s “sentiment” measure is U.S.
+political leaning—left, center, or right—rather than positive/negative emotion.
 
-The old COCA broadcast datasets, the three legacy topic-analysis folders, and the
-original paper, drafts and plots have been removed from this repository's current
-tree. They remain available in Git history and in the linked starting project.
+## V1: real versus expected leaning
 
-The current modules classify political leaning and general topic independently.
+The primary comparison uses **2,500 real tweets** (500 per outlet) and
+**2,625 synthetic tweets** (525 per matching outlet, thinking off). Another 525
+synthetic tweets use a generic news-organization voice; these are a separate
+baseline and are excluded from the five-outlet comparison below. The 840-response
+thinking-on/off pilot is reported separately in [V1Results.md](V1Results.md).
 
-## Synthetic classification results
+For each group, the signed score is `100 × mean[P(right) − P(left)]`:
+negative values lean left in the classifier’s output; positive values lean right.
+The difference is **real minus expected**, calculated before rounding. A positive
+difference means the real sample scores farther right than the synthetic sample;
+it does not necessarily mean the real sample is right-leaning overall. This score
+is neither confidence nor a validated measure of bias intensity.
 
-[V1Results.md](V1Results.md) reports both classifier runs on the Haiku main and
-pilot datasets, including topic prompt agreement, political-leaning distributions,
-real-tweet comparisons, data-quality sensitivity checks, and graphs. Requested
-topics are proxy references; the synthetic data has no human leaning labels.
+| Outlet | Real score | Expected score | Real − expected | Real center labels | Expected center labels |
+|---|---:|---:|---:|---:|---:|
+| New York Times | -42.5 | -43.7 | +1.2 | 1.0% | 45.5% |
+| Fox News | +73.1 | +52.7 | +20.4 | 0.0% | 2.7% |
+| Reuters | -6.8 | -5.3 | -1.5 | 5.8% | 63.0% |
+| Associated Press | +18.8 | -8.8 | +27.6 | 0.0% | 62.9% |
+| ABC News | -8.0 | -75.8 | +67.8 | 1.0% | 21.0% |
+
+- **ABC has the largest gap:** its real tweets score −8.0, while its generated
+  voice scores −75.8. Haiku’s ABC-style output is much more left-leaning according
+  to this classifier.
+- **AP crosses zero:** its real sample scores +18.8 and its generated voice −8.8.
+  Fox’s real sample also scores farther right than its generated voice (+73.1
+  versus +52.7).
+- **NYT and Reuters have similar average scores across datasets, but different
+  label distributions.** For example, NYT receives 1.0% center labels in real posts
+  versus 45.5% in generated posts. Similar averages can conceal large differences
+  in the mix of predictions.
+- **Across the same five outlets, center labels rise from 1.6% in real tweets to
+  39.0% in generated tweets.** This is a change in classifier behavior across
+  datasets, not proof that generated writing is more neutral.
+
+![Real and synthetic political-leaning score comparison](reports/v1/figures/leaning_comparison.png)
+
+The table uses unweighted results for both datasets. The graph also shows
+synthetic scores weighted back to the pooled real-topic mix to account for
+oversampling of smaller topics. Those adjustments are small in V1 and preserve
+the ordering of the synthetic voice scores. The graph’s neutral voice has no
+corresponding real outlet.
+
+## What the comparison can tell us
+
+The results reveal differences between **real outlet posts and Haiku’s portrayal
+of those outlets, as measured by the current classifier**. They combine choices
+made by the outlet, the generator, and the classifier; they cannot isolate which
+one causes a difference.
+
+The synthetic prompts specify an outlet and topic, but provide no shared event
+or factual source. Real and generated tweets therefore differ in stories, topic
+mix, candidate mentions, language, and writing style. They are not matched
+versions of the same reporting. The real sample is drawn from an election-related
+dataset, rather than each outlet’s full posting history.
+
+There are no human-verified leaning labels. The classifier has also assigned
+very high confidence to questionable partisan labels on routine factual news.
+Treat these results as an exploratory comparison, not verified outlet bias
+ratings. Topic controls need care too: V1 topic prompt agreement is **53.7%**,
+and only **1 of 1,170** synthetic responses requested under “president” received
+that label. Topic-based weighting inherits the topic model’s limitations.
+
+## Results and data
+
+- **[V1Results.md](V1Results.md):** full methods, six graphs, topic metrics,
+  leaning distributions, pilot comparisons, and data-quality checks.
+- **[Machine-readable metrics](reports/v1/metrics.json):** source for the comparison
+  table and all aggregate results.
+- **[Real-tweet CSV](dataset/tweet_manifest.csv):** outlet, original tweet, topic,
+  political-leaning label, and confidence.
+- **[Scored synthetic responses](reports/v1/scored_generations.jsonl):** all 3,990
+  main and pilot responses with both classifiers’ predictions.
+- **[Synthetic data and generation design](dataset/synthetic/README.md):** prompts,
+  requested voices, topic allocations, and flags. These texts are invented and
+  must not be presented as actual outlet posts.
+- **[Inference manifest](reports/v1/run_manifest.json):** source hashes, model
+  revisions, classifier policy, and environment.
+
+The real tweets come from
+[deadbirds/usc-x-24-us-election-parquet](https://huggingface.co/datasets/deadbirds/usc-x-24-us-election-parquet).
+The independent modules and reproduction commands are documented below.
+
+## Starting project
+
+This project continues from
+[KuvaKodes/Media-Bias-Sentiment-Analysis](https://github.com/KuvaKodes/Media-Bias-Sentiment-Analysis),
+originally developed for Kushaan Vardhan’s study of televised news discourse.
+The original broadcast datasets, topic folders, papers, drafts, and plots have
+been removed from this copy; they remain in Git history and the linked project.
 
 ## Optional Political-Leaning Classifier
 
@@ -199,7 +278,8 @@ coverage, balance, raw-field preservation and consistency between CSV and JSONL.
 `scripts/generate_synthetic_tweets.py` asks Claude Haiku 5.5 (`claude-haiku-5-5`)
 to write tweets in each outlet's voice from a topic alone, plus a neutral "US news
 organization" baseline. Outputs are compared against the real tweets. Each
-request produces one tweet, so every tweet is an independent sample. There is no
+request produces one tweet without seeing other responses. Repeated templates
+and duplicates mean the results are not necessarily independent. There is no
 system prompt, and no facts, events or real tweets appear in the prompt, so the
 model chooses both the story and its framing. The prompt template, outlet names
 and handles, neutral topic wording, thinking settings and package versions are
