@@ -1,0 +1,91 @@
+{
+  "model": "claude-haiku-5-5",
+  "prompt_version": "outlet-voice-v1",
+  "template": "It is 2024, during the US presidential campaign. Write one tweet that {voice} might post on its main X account about {topic}. Reply with only the tweet text: 280 characters or fewer, no links, no hashtags.",
+  "voices": {
+    "nytimes": "The New York Times (@nytimes)",
+    "foxnews": "Fox News (@FoxNews)",
+    "reuters": "Reuters (@Reuters)",
+    "ap": "Associated Press (@AP)",
+    "abc": "ABC News (@ABC)",
+    "neutral": "a US news organization"
+  },
+  "topic_wording": {
+    "president": "the president and the presidential candidates",
+    "elections": "voting and the election",
+    "crime and justice": "crime, courts and policing",
+    "gun issues": "guns and gun laws",
+    "foreign affairs": "foreign policy and international conflicts",
+    "immigration": "immigration and the border",
+    "economy": "the economy",
+    "race and civil rights": "race and civil rights",
+    "healthcare": "health care and public health",
+    "gender rights": "gender identity and LGBTQ issues",
+    "reproductive rights": "abortion",
+    "education": "schools and education policy",
+    "technology": "technology and AI",
+    "environment": "climate and energy policy"
+  },
+  "taxonomy_version": "compact-topics-gun-evidence-v2",
+  "arms": {
+    "thinking-off": {
+      "thinking": {
+        "type": "disabled"
+      },
+      "output_config": {
+        "effort": "medium"
+      }
+    }
+  },
+  "max_tokens": 4096,
+  "repeats": null,
+  "topic_mix": {
+    "kind": "real pooled mix with a per-topic floor",
+    "source": "dataset/topic_scores.jsonl",
+    "source_sha256": "0a6dec6496b0212b250357d397492858fac034d69546ea31dad195d5bc1cdeeb",
+    "source_counts": {
+      "crime and justice": 274,
+      "economy": 65,
+      "education": 24,
+      "elections": 598,
+      "environment": 10,
+      "foreign affairs": 121,
+      "gender rights": 38,
+      "gun issues": 125,
+      "healthcare": 44,
+      "immigration": 96,
+      "other": 18,
+      "president": 968,
+      "race and civil rights": 68,
+      "reproductive rights": 23,
+      "technology": 28
+    },
+    "per_voice_before_floor": 500,
+    "min_per_topic": 10,
+    "allocation_per_voice": {
+      "president": 195,
+      "elections": 120,
+      "crime and justice": 55,
+      "gun issues": 25,
+      "foreign affairs": 24,
+      "immigration": 19,
+      "economy": 13,
+      "race and civil rights": 14,
+      "healthcare": 10,
+      "gender rights": 10,
+      "reproductive rights": 10,
+      "education": 10,
+      "technology": 10,
+      "environment": 10
+    }
+  },
+  "tweets_per_request": 1,
+  "system_prompt": null,
+  "order_seed": 20241105,
+  "sampling": "API defaults; Haiku 5.5 does not accept other temperature values",
+  "packages": {
+    "anthropic": "1.15.0"
+  },
+  "python": "3.13.13",
+  "started_at": "2026-10-16T01:09:32.883975+00:00"
+}

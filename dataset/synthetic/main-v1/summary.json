@@ -1,0 +1,122 @@
+{
+  "requests": 3150,
+  "declined": 0,
+  "api_refusals": 0,
+  "by_arm_and_voice": {
+    "thinking-off / abc": {
+      "requests": 525,
+      "declined": 0,
+      "decline_rate": 0.0,
+      "tweets_written": 525,
+      "over_280_chars": 72,
+      "format_problems": 32,
+      "median_chars": 239,
+      "exact_duplicates": 4,
+      "party_mentioned": {
+        "neither": 342,
+        "both": 167,
+        "democrat only": 16
+      }
+    },
+    "thinking-off / ap": {
+      "requests": 525,
+      "declined": 0,
+      "decline_rate": 0.0,
+      "tweets_written": 525,
+      "over_280_chars": 120,
+      "format_problems": 6,
+      "median_chars": 252,
+      "exact_duplicates": 2,
+      "party_mentioned": {
+        "neither": 329,
+        "both": 193,
+        "democrat only": 3
+      }
+    },
+    "thinking-off / foxnews": {
+      "requests": 525,
+      "declined": 0,
+      "decline_rate": 0.0,
+      "tweets_written": 525,
+      "over_280_chars": 56,
+      "format_problems": 51,
+      "median_chars": 228,
+      "exact_duplicates": 8,
+      "party_mentioned": {
+        "neither": 414,
+        "both": 99,
+        "democrat only": 12
+      }
+    },
+    "thinking-off / neutral": {
+      "requests": 525,
+      "declined": 0,
+      "decline_rate": 0.0,
+      "tweets_written": 525,
+      "over_280_chars": 147,
+      "format_problems": 2,
+      "median_chars": 254,
+      "exact_duplicates": 0,
+      "party_mentioned": {
+        "neither": 453,
+        "both": 59,
+        "democrat only": 13
+      }
+    },
+    "thinking-off / nytimes": {
+      "requests": 525,
+      "declined": 0,
+      "decline_rate": 0.0,
+      "tweets_written": 525,
+      "over_280_chars": 85,
+      "format_problems": 6,
+      "median_chars": 242,
+      "exact_duplicates": 2,
+      "party_mentioned": {
+        "both": 143,
+        "neither": 374,
+        "democrat only": 8
+      }
+    },
+    "thinking-off / reuters": {
+      "requests": 525,
+      "declined": 0,
+      "decline_rate": 0.0,
+      "tweets_written": 525,
+      "over_280_chars": 115,
+      "format_problems": 11,
+      "median_chars": 251,
+      "exact_duplicates": 4,
+      "party_mentioned": {
+        "neither": 355,
+        "both": 167,
+        "democrat only": 3
+      }
+    }
+  },
+  "decline_rate_by_arm_and_topic": {
+    "thinking-off / crime and justice": 0.0,
+    "thinking-off / economy": 0.0,
+    "thinking-off / education": 0.0,
+    "thinking-off / elections": 0.0,
+    "thinking-off / environment": 0.0,
+    "thinking-off / foreign affairs": 0.0,
+    "thinking-off / gender rights": 0.0,
+    "thinking-off / gun issues": 0.0,
+    "thinking-off / healthcare": 0.0,
+    "thinking-off / immigration": 0.0,
+    "thinking-off / president": 0.0,
+    "thinking-off / race and civil rights": 0.0,
+    "thinking-off / reproductive rights": 0.0,
+    "thinking-off / technology": 0.0
+  },
+  "tokens": {
+    "input": 270036,
+    "output": 244781
+  },
+  "estimated_cost_usd": 0.1494,
+  "notes": [
+    "Declines combine API refusals with the possible_decline text flag; check a sample by hand.",
+    "Party mentions use the same keyword lists as the real-tweet review."
+  ]
+}

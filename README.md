@@ -186,3 +186,50 @@ emotional sentiment. Topic and leaning labels are model predictions, not manuall
 verified ground-truth annotations. CSV quoting preserves commas, quotes and line
 breaks in raw tweet text. Run `python -m scripts.validate_media_dataset` to check
 coverage, balance, raw-field preservation and consistency between CSV and JSONL.
+
+## Synthetic Outlet-Voice Tweets
+
+`scripts/generate_synthetic_tweets.py` asks Claude Haiku 5.5 (`claude-haiku-5-5`)
+to write tweets in each outlet's voice from a topic alone, plus a neutral "US news
+organization" baseline. Outputs are compared against the real tweets. Each
+request produces one tweet, so every tweet is an independent sample. There is no
+system prompt, and no facts, events or real tweets appear in the prompt, so the
+model chooses both the story and its framing. The prompt template, outlet names
+and handles, neutral topic wording, thinking settings and package versions are
+recorded in each run's `run_manifest.json`. A run directory refuses different
+settings, so results with different settings are never mixed. The full list of
+design decisions and their reasons is kept in the project's methodology doc.
+
+Requests use the Anthropic Python SDK, which needs Python 3.10+. The API key is
+read from the macOS Keychain item `anthropic-api-key` (or `ANTHROPIC_API_KEY` when
+set). It is never printed, logged or written to disk; `.gitignore` also excludes
+`.env` and `*.key` files. To store the key, run this in your own terminal and
+paste the key at the hidden prompt:
+
+```sh
+security add-generic-password -a "$USER" -s anthropic-api-key -w
+```
+
+```sh
+python -m pip install anthropic
+python -m scripts.generate_synthetic_tweets --out dataset/synthetic/pilot-v1 --dry-run
+python -m scripts.generate_synthetic_tweets --out dataset/synthetic/pilot-v1
+python -m scripts.generate_synthetic_tweets --out dataset/synthetic/main-v1 --arms thinking-off --topic-mix real
+python -m scripts.summarize_synthetic_tweets --run dataset/synthetic/pilot-v1
+```
+
+`--topic-mix real` splits `--per-voice` tweets (default 500) across topics in
+proportion to the real tweets' topics in `dataset/topic_scores.jsonl`, excluding
+"other". It then raises each topic to `--min-per-topic` (default 10), so small
+topics can still be compared; analyses weight back to the real mix. The
+allocation and a checksum of the source file are stored in the run manifest.
+Run smoke tests (`--limit`) in a scratch folder, not in a run directory.
+
+The pilot covers 2 thinking settings × 6 voices × 14 topics × 5 repeats = 840
+requests. Thinking is either on (adaptive, medium effort, summaries saved) or
+off, with every other setting identical. Haiku 5.5 does not accept non-default
+temperature values, so variation comes from repeats. Generated text is stored
+unedited. Flags mark text over 280 characters, links, hashtags, prefaces, quoting
+and possible declines; Haiku sometimes declines in ordinary text rather than
+with an API refusal. Declined and off-format replies are kept and flagged rather
+than dropped. Failed requests go to `errors.jsonl` and are retried on the next run.

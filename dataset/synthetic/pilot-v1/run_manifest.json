@@ -1,0 +1,61 @@
+{
+  "model": "claude-haiku-5-5",
+  "prompt_version": "outlet-voice-v1",
+  "template": "It is 2024, during the US presidential campaign. Write one tweet that {voice} might post on its main X account about {topic}. Reply with only the tweet text: 280 characters or fewer, no links, no hashtags.",
+  "voices": {
+    "nytimes": "The New York Times (@nytimes)",
+    "foxnews": "Fox News (@FoxNews)",
+    "reuters": "Reuters (@Reuters)",
+    "ap": "Associated Press (@AP)",
+    "abc": "ABC News (@ABC)",
+    "neutral": "a US news organization"
+  },
+  "topic_wording": {
+    "president": "the president and the presidential candidates",
+    "elections": "voting and the election",
+    "crime and justice": "crime, courts and policing",
+    "gun issues": "guns and gun laws",
+    "foreign affairs": "foreign policy and international conflicts",
+    "immigration": "immigration and the border",
+    "economy": "the economy",
+    "race and civil rights": "race and civil rights",
+    "healthcare": "health care and public health",
+    "gender rights": "gender identity and LGBTQ issues",
+    "reproductive rights": "abortion",
+    "education": "schools and education policy",
+    "technology": "technology and AI",
+    "environment": "climate and energy policy"
+  },
+  "taxonomy_version": "compact-topics-gun-evidence-v2",
+  "arms": {
+    "thinking-on": {
+      "thinking": {
+        "type": "adaptive",
+        "display": "summarized"
+      },
+      "output_config": {
+        "effort": "medium"
+      }
+    },
+    "thinking-off": {
+      "thinking": {
+        "type": "disabled"
+      },
+      "output_config": {
+        "effort": "medium"
+      }
+    }
+  },
+  "max_tokens": 4096,
+  "repeats": 5,
+  "topic_mix": "uniform",
+  "tweets_per_request": 1,
+  "system_prompt": null,
+  "order_seed": 20241105,
+  "sampling": "API defaults; Haiku 5.5 does not accept other temperature values",
+  "packages": {
+    "anthropic": "1.15.0"
+  },
+  "python": "3.13.13",
+  "started_at": "2026-10-16T00:48:30.830766+00:00"
+}

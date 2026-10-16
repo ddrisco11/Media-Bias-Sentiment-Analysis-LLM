@@ -2,3 +2,8 @@ __pycache__/
 *.py[cod]
 .venv/
 .pytest_cache/
+
+# Secrets: API keys must never be committed
+.env
+.env.*
+*.key
