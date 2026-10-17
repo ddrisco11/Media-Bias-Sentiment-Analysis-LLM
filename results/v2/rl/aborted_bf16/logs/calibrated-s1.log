@@ -1,26 +1,0 @@
-W1016 23:08:06.353000 61252 .venv/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/redirects.py:35] NOTE: Redirects are currently not supported in MacOs.
-[transformers] `torch_dtype` is deprecated! Use `dtype` instead!
-Loading weights:   0%|          | 0/290 [00:00<?, ?it/s]Loading weights: 100%|██████████| 290/290 [00:00<00:00, 5569.61it/s]
-/Users/kushaan/Code/Media-Bias-Sentiment-Analysis-LLM/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
-  warnings.warn(
-Loading weights:   0%|          | 0/394 [00:00<?, ?it/s]Loading weights: 100%|██████████| 394/394 [00:00<00:00, 6151.72it/s]
-step 1 49.24s reward -0.772 kl 0.00 fail 0.61 tv 0.349
-step 2 52.5s reward -0.847 kl 0.01 fail 0.65 tv 0.345
-step 3 54.92s reward -0.683 kl -0.00 fail 0.46 tv 0.364
-step 4 51.96s reward -0.729 kl 0.02 fail 0.53 tv 0.373
-step 5 51.55s reward -0.806 kl -0.01 fail 0.55 tv 0.403
-step 6 42.03s reward -0.758 kl 0.01 fail 0.55 tv 0.393
-step 7 70.23s reward -0.823 kl -0.03 fail 0.57 tv 0.389
-step 8 93.91s reward -0.639 kl -0.01 fail 0.46 tv 0.356
-step 9 112.96s reward -0.562 kl 0.23 fail 0.40 tv 0.347
-step 10 105.24s reward -0.561 kl 0.24 fail 0.42 tv 0.315
-step 11 76.49s reward -0.498 kl 0.50 fail 0.33 tv 0.318
-step 12 64.96s reward -0.517 kl 0.65 fail 0.33 tv 0.326
-step 13 75.07s reward -0.525 kl 0.87 fail 0.31 tv 0.342
-step 14 211.55s reward -0.467 kl 0.89 fail 0.28 tv 0.340
-step 15 122.89s reward -0.413 kl 1.42 fail 0.16 tv 0.334
-step 16 113.5s reward -0.504 kl 1.63 fail 0.25 tv 0.361
-step 17 130.34s reward -0.394 kl 2.10 fail 0.12 tv 0.357
-step 18 94.82s reward -0.372 kl 2.42 fail 0.10 tv 0.350
-/opt/homebrew/Cellar/python@3.13/3.13.13/Frameworks/Python.framework/Versions/3.13/lib/python3.13/multiprocessing/resource_tracker.py:400: UserWarning: resource_tracker: There appear to be 1 leaked semaphore objects to clean up at shutdown: {'/loky-61252-t1qudnrj'}
-  warnings.warn(

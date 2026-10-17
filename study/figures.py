@@ -1,4 +1,4 @@
-"""Paper figures from results/v2/analysis/results.json (and rl_results.json when present).
+"""Paper figures from results/v2/analysis/results.json.
 
 Design rules (validated light palette; one y-scale per panel, so measures on different scales get separate panels;
 fixed series colours with marker shapes as secondary encoding; legends always shown; recessive grid).
@@ -157,35 +157,6 @@ def fig_variants(r):
     plt.close(fig)
 
 
-def fig_rl():
-    path = RESULTS / 'analysis' / 'rl_results.json'
-    if not path.exists():
-        return
-    r = json.loads(path.read_text())
-    conds = {'calibrated': (S1, 'o'), 'format': (S2, 'D'), 'shuffled': (S3, 's'), 'pooled': (INK2, '^')}
-    fig, axes = plt.subplots(1, 3, figsize=(9.6, 3.0), sharey=True)
-    for ax, (key, title) in zip(axes, [('tv_m1', 'Reward classifier (M1)'), ('tv_m3', 'Held-out classifier (M3)'), ('tv_judge', 'Blind judge (M2)')]):
-        for run, steps in r['evals'].items():
-            if run == 'base':
-                continue
-            cond = run.rsplit('-s', 1)[0]
-            if cond not in conds:
-                continue
-            pts = sorted((int(s), v['train'][key]) for s, v in steps.items() if 'train' in v and v['train'].get(key) is not None)
-            base = r['evals'].get('base', {}).get('0', {}).get('train', {}).get(key)
-            if base is not None:
-                pts = [(0, base)] + pts
-            if pts:
-                ax.plot([p[0] for p in pts], [p[1] for p in pts], marker=conds[cond][1], color=conds[cond][0], linewidth=1.5,
-                        markersize=4, label=cond if run.endswith('-s1') else None)
-        ax.set_title(title, loc='left', fontsize=9)
-        ax.set_xlabel('RL step (training topics)')
-    axes[0].set_ylabel('Distance to real outlet\n(total variation, mean over outlets)')
-    axes[0].legend(loc='lower left', bbox_to_anchor=(0, 1.08), ncol=4)
-    fig.savefig(OUT / 'fig7_rl_curves.png')
-    plt.close(fig)
-
-
 def main():
     OUT.mkdir(parents=True, exist_ok=True)
     r = json.loads((RESULTS / 'analysis' / 'results.json').read_text())
@@ -195,7 +166,6 @@ def main():
     fig_link()
     fig_spread_identification(r)
     fig_variants(r)
-    fig_rl()
     print('figures written to', OUT)
 
 

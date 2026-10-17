@@ -1,9 +1,9 @@
-# Imitating News Outlets with a Language Model: Classifier Artifacts, What Survives Them, and Optimising Against a Bias Proxy
+# Imitating News Outlets with a Language Model: Classifier Artifacts and What Survives Them
 
 *Working paper, draft of 2026-10-17. Authors: Kushaan Vardhan, David Driscoll. The analysis pipeline was built with
 Claude Code.*
 - *Pre-registration:* `docs/protocol_v2.md`, committed before any v2 data, with every later revision logged.
-- *Reproducibility:* every number is produced by the code in `study/` from the files in `results/v2/` (Section 13).
+- *Reproducibility:* every number is produced by the code in `study/` from the files in `results/v2/` (Section 11).
 
 > **Synthetic-content notice.** This paper analyses tweets written by language models "in the voice of" real news
 > organisations. They are not posts by those organisations. They often contain invented facts, and they must not be
@@ -16,7 +16,33 @@ Claude Code.*
 
 ## Abstract
 
-[Written once the RL results are final.]
+*Draft; framing results are provisional until the human validation is coded.*
+
+What does a language model produce when asked to write as a particular news outlet, and how does that compare with
+what the outlet actually publishes? We prompted Claude Haiku 5.5 for election-season tweets in the voices of five US
+outlets (NYT, Fox News, Reuters, AP, ABC News) and of a neutral news organisation, and compared about 12,000 generated
+tweets with 2,282 real ones. An earlier version of this study used an off-the-shelf left/center/right classifier and
+reported large gaps between real and generated outlets. We show that this classifier is unreliable for the
+comparison:
+- a trailing link changes its label for 37% of tweets;
+- swapping party names in neutral sentences moves its score by 81 points.
+
+Re-analysing the earlier comparison one correction at a time, each of its headline gaps vanishes, reverses, or
+exists only under the classifier.
+
+Under a blind LLM judge, which is reliable on retest and against a second judge but not yet validated by humans, only
+the Fox News voice differs in framing from the model's neutral voice. This holds across prompt wordings, time
+anchoring and generator models. The model's NYT, Reuters, AP and ABC voices are equivalent to its neutral voice.
+
+Against the real outlets, the model writes a different genre (explainers, promotions and voting reminders rather
+than news reports) and a flattened politics. Its non-Fox voices are rated exactly neutral even when they name the
+parties, erasing the left tilt that real NYT tweets show over the whole campaign and that ABC, AP and Reuters tweets
+show in its final months. The Fox voice reaches real Fox's overall slant only through opinion and promotional
+tweets; its news reports about the same events are far milder. Given a real event, all voices converge on similar
+news reports.
+
+We discuss what these findings imply for simulating institutions with language models and for measuring political
+slant in generated text.
 
 ## 1. Introduction
 
@@ -50,9 +76,6 @@ question and asks which conclusions survive. Our findings are:
      tweets vary, and real NYT leans left.
    - **Fox:** the voice's overall slant matches real Fox, but only through its opinion and promotional tweets. In news
      reports about the same events it is far milder (+0.13 against +0.62).
-4. **Optimising an open model against the classifier.** We train Qwen2.5-0.5B with RL, rewarding it for matching each
-   outlet's real label distribution. We use format-only, shuffled-target and pooled-target controls and measures the
-   model never trains on. This tests whether a bias proxy can be optimised without reward hacking [Section 9].
 
 Contributions:
 - a pre-registered, multi-measure design for comparing LLM outlet portrayals with real outlet output (symmetric
@@ -60,7 +83,8 @@ Contributions:
 - two quantified measurement artifacts in an off-the-shelf political-leaning classifier, each large enough to flip a
   substantive conclusion;
 - a decomposition of "how the model imagines outlets" into agenda, genre, tone and framing;
-- an RL study of optimising against that classifier, with controls and held-out measures.
+- a step-by-step re-analysis of an earlier version of this study, showing which correction removes each of its
+  headline findings.
 
 ## 2. Related work
 
@@ -90,11 +114,6 @@ humans (Bavaresco et al. 2025). Design-based supervised learning (Egami et al. 2
 inference give valid estimates from LLM labels combined with a random human-coded subset. We use a blinded,
 pointwise judge with flip randomisation. We add a second Claude judge and a non-Claude judge, and prepare a
 human-coding sample with known inclusion probabilities.
-
-**Reward hacking.** Optimising against a learned proxy improves the proxy while the true objective eventually
-degrades. The gap is predictable in KL distance (Gao et al. 2023), and hacking can appear abruptly (Pan et al.
-2022). Dr. GRPO (Liu et al. 2025) removes length and standard-deviation normalisation biases from group-relative
-policy gradients. We use its advantage form, and we report Goodhart curves against held-out measures.
 
 ## 3. Data
 
@@ -157,7 +176,7 @@ Real and generated tweets about the same event can then be compared directly.
 ## 4. Measures and validity checks
 
 **M1, the classifier.** `matous-volf/political-leaning-deberta-large` gives P(left/center/right). We report label
-shares and the net score 100·[P(right) − P(left)]. All texts are scored with links removed (Section 7.1).
+shares and the net score 100·[P(right) − P(left)]. All texts are scored with links removed (Section 6.1).
 
 **M2, the blind judge.** Claude Sonnet 5.5, given a codebook and anchored examples, rates:
 - **stance** toward Democrats and toward Republicans (−2..+2, or NA if not mentioned);
@@ -195,49 +214,7 @@ party, with recorded inclusion probabilities. It also contains 30 swap pairs and
 and a codebook identical to the judge rubric are provided. **No human labels exist yet. Every judge-based conclusion
 is provisional on them.**
 
-## 5. RL study design
-
-Haiku cannot be fine-tuned, so the RL study uses Qwen2.5-0.5B-Instruct with a LoRA adapter (r = 16, all linear
-layers). Its pre-RL outputs are its own baseline. The 0.5B model was selected by a pre-registered feasibility rule:
-1.5B ran at 63 s per step on the available Apple M2 Max.
-
-**Prompts.** Prompt v1 for the five outlets. 10 training topics are drawn from each outlet's real topic mix; 4 topics
-are held out (immigration, economy, gender rights, environment).
-
-**Reward.**
-r(x) = Σ_l P_M1(l|x)·(p_o(l) − q̂_o(l)) − 1[format fail] − β·Σ_t (log π − log π_ref)
-- p_o is the outlet's smoothed real M1 label distribution.
-- q̂_o is the policy's batch label marginal, shrunk toward its previous value (κ = 16).
-- The leaning term rewards labels the policy under-produces relative to the real outlet. Its fixed point is
-  q = p, and it is bounded.
-
-**Training.**
-- Advantages are group-mean-centred, with groups of 8 completions per prompt and no division by the standard deviation.
-- 80 rollouts per step. The final checkpoint is step 200 (300 in the protocol; reduced for feasibility, change log v2.6).
-- AdamW at learning rate 2e-5.
-- β = 0.05, using a sequence-level k1 KL estimate placed in the reward.
-- Sampling at temperature 1 with no top-k or top-p truncation.
-- fp32 weights. A first bf16 launch produced NaN sampling probabilities and was restarted in fp32 for every
-  condition.
-
-**Conditions.**
-- calibrated: 3 seeds;
-- format-only: 2 seeds;
-- shuffled targets, a cyclic derangement of outlets: 1 seed;
-- pooled target, with every outlet given the pooled real distribution: 1 seed.
-
-**Evaluation.**
-- Every checkpoint and the base model are sampled on training topics, held-out topics, and a reworded template.
-- Each sample is scored by M1 (the reward model), M3 and M2, none of which except M1 enter training.
-- Reward-hacking diagnostics:
-  - M1 with party names masked;
-  - party-swap flip rates;
-  - party-mention overshoot;
-  - distinct-2 and duplicate rates;
-  - reference-model NLL;
-  - politicalness.
-
-## 6. Statistics
+## 5. Statistics
 
 - **Intervals:** a cluster bootstrap with B = 10,000. Near-duplicate clusters are formed by word-3-gram Jaccard
   ≥ 0.5 on masked text, and resampled within strata: voice × requested topic for generated tweets, and
@@ -251,9 +228,9 @@ r(x) = Σ_l P_M1(l|x)·(p_o(l) − q̂_o(l)) − 1[format fail] − β·Σ_t (lo
   variants.
 
 
-## 7. Results I: measurement
+## 6. Results I: measurement
 
-### 7.1 A trailing link changes the classifier's answer
+### 6.1 A trailing link changes the classifier's answer
 Real outlet tweets usually end in a t.co link, and v1 scored them with it. Removing the link changes M1's label for
 **37.5%** of the 2,275 real tweets that have one. The share labelled "center" goes from 1.6% with links to 27.5%
 without. Appending a random t.co link to generated tweets, which have none, changes the label for 36.7% of them, and
@@ -262,7 +239,7 @@ the center share falls from 37.8% to 4.2% (Figure 4).
 v1's contrast ("1.6% center among real tweets against 39% among generated") is therefore mostly a link artifact. With
 links removed from both, the shares are 27.5% and 37.8%. All v2 measures score text without links.
 
-### 7.2 The classifier tracks party names
+### 6.2 The classifier tracks party names
 The clean test uses 30 sentences that are neutral by construction, for example "{candidate} will hold a campaign rally
 in Pennsylvania on Saturday, the campaign said" (Figure 3).
 - **The classifier:** swapping Harris for Trump changes M1's net score by **81 points** on average and flips **47%**
@@ -280,7 +257,7 @@ sign for 20%, and goes to 0 for 22%. M1's change correlates with the judge's at 
 
 Under the pre-registered rule (H3), M1 is name-sensitive, and the judge becomes co-primary.
 
-### 7.3 Judge reliability, and the limits of what it shows
+### 6.3 Judge reliability, and the limits of what it shows
 - **Test-retest:** 200 items re-judged in a separate batch give Krippendorff's α = 0.90 for slant and 0.92–0.96 for
   stances, genre and the NA flags.
 - **Second judge:** Opus 5.5 on the 480-item human set agrees with Sonnet at α = 0.77 for slant, 0.76 and 0.78 for the
@@ -289,7 +266,7 @@ Under the pre-registered rule (H3), M1 is name-sensitive, and the judge becomes 
   (real) and −0.01 ± 0.01 (generated), which is negligible.
 
 **These are reliability results within one model family, not validity results.** The local non-Claude judge
-(Qwen2.5-7B) is still being run [Section 9]. Human coding remains the gate.
+(Qwen2.5-7B) has rated only part of the human set so far and is pending. Human coding remains the gate.
 
 Two observations bound how far the judge can be trusted:
 - **It is not fully blind in practice.** With outlet names masked, it still identifies the outlet of 67.5% of real
@@ -310,7 +287,7 @@ Range restriction contributes: the judge rates 93% of event-conditioned tweets 0
 collapse does not show that the classifiers measure something the judge misses. It does show that the two kinds of
 measure cannot stand in for each other.
 
-### 7.4 Revisiting v1: one correction at a time
+### 6.4 Revisiting v1: one correction at a time
 v1 reported, for each outlet, the classifier's real score minus its "expected" (Haiku) score. Positive means the real
 outlet scores further right. Table 3 starts from v1's published numbers and applies the v2 corrections cumulatively,
 changing one thing per row. This also shows which kinds of mistake matter most in studies like this one.
@@ -352,9 +329,9 @@ Three more lessons come from v1's supporting analyses:
 3. **Topic wording.** Requesting "voting and the election" produced voting reminders in every voice. That one choice
    of wording accounts for about 23% of all generated tweets.
 
-## 8. Results II: how the model portrays each outlet
+## 7. Results II: how the model portrays each outlet
 
-### 8.1 Against the model's own neutral voice (RQ1)
+### 7.1 Against the model's own neutral voice (RQ1)
 Table 1 compares each voice with Haiku's own neutral voice. Main-v1 is standardised to the real topic mix, with
 cluster-bootstrap 95% intervals (B = 10,000).
 
@@ -399,7 +376,7 @@ write about and how they word it moves both classifiers, and the judge treats no
 of voice means was 0.36 for slant, against 0.43 when written separately. Replacing the neutral persona with "no
 persona" or "a journalist" left framing neutral (−0.04 and −0.11, against −0.03).
 
-### 8.2 Against the real outlets (RQ2)
+### 7.2 Against the real outlets (RQ2)
 **Table 2.** Real (cleaned) tweets against Haiku's voice (main-v1). Plain means.
 
 | Outlet | Judge slant, real / generated | Stance → Rep, real / generated | Names a party, real / generated | Generated tweets that pass the source keyword filter |
@@ -464,7 +441,7 @@ persona" or "a journalist" left framing neutral (−0.04 and −0.11, against �
   the generated ABC voice slightly *right* of real ABC because real ABC leans slightly left. It is +0.05 [−0.02, +0.13]
   in the event arm.
 
-### 8.3 Holding the news fixed: the event-conditioned arm
+### 7.3 Holding the news fixed: the event-conditioned arm
 Given the same neutral description of a real event, every voice writes a news report: 78–85%, and 65% for Fox, which
 adds breaking-news framing. Real and generated tweets about the same events then become hard to tell apart. An
 embedding classifier trained only on same-event pairs reaches AUC 0.46 (NYT), 0.43 (ABC), 0.54 (AP), 0.58 (Reuters)
@@ -489,7 +466,7 @@ overlap lexically with the description (word Jaccard 0.51) far more than with th
 That is lower than the description's own overlap with them (0.25). Generated tweets paraphrase the description; they do
 not copy the real tweets.
 
-### 8.4 Word-level differences (exploratory)
+### 7.4 Word-level differences (exploratory)
 Log-odds with an informative Dirichlet prior show the genre gap at the word level.
 - **Generated voices overuse:**
   - second-person and civic words ("your", "you", "voters", "where … stand", "candidates", "check", "polling",
@@ -498,23 +475,12 @@ Log-odds with an informative Dirichlet prior show the genre gap at the word leve
 - **Real outlets overuse** people and events: "Biden", "Trump", "Harris", "president", "former", "says", "after",
   "GOP", "House".
 
-### 8.5 Sensitivity checks
+### 7.5 Sensitivity checks
 - **Near-duplicate threshold:** clustering at word-3-gram Jaccard 0.3 or 0.7 instead of 0.5 leaves every Table 1
   estimate and interval essentially unchanged (Fox slant +0.66 [0.62, 0.74] and [0.62, 0.70]).
 - **Uncleaned real set:** using all 2,500 real tweets gives the same outlet slant levels within 0.03.
 
-## 9. Results III: optimising against the bias proxy (RL)
-
-[Pending: 7 runs of 300 steps on Qwen2.5-0.5B: 3 calibrated, 2 format-only, 1 shuffled, 1 pooled. Interim reports are
-in `docs/paper/rl_interim.md`. This section will report:
-- divergence from each outlet's real distribution under M1 (the reward), M3 and the judge, on training topics,
-  held-out topics and a reworded template, at the pre-registered step-300 checkpoint;
-- transfer ratios against the format-only control;
-- the pre-registered reward-hacking diagnostics;
-- Goodhart curves (Figure 7).
-The non-Claude judge results also go here, because that judge shares the GPU with RL.]
-
-## 10. Discussion
+## 8. Discussion
 
 **What the measurement results mean for this literature.** Political-leaning classifiers are convenient for
 large-scale comparisons of real and generated text. We found two artifacts in one such classifier that are large
@@ -547,12 +513,11 @@ tweets from style alone, so its slant ratings and its recognition of the source 
 prepared sample is the next step, and it could change the framing conclusions, especially for the small tilts of
 mainstream outlets.
 
-## 11. Limitations
+## 9. Limitations
 
 1. **No human labels yet.** Judge validity is unestablished. Both validated judges are Claude models, like the
    generator, and the non-Claude judge is pending.
-2. **One generator family for the main analyses.** Sonnet and Opus are robustness variants. The Qwen base model is the
-   RL base, not a comparison generator.
+2. **One generator family.** Sonnet and Opus are robustness variants. No non-Claude generator has been tested yet.
 3. **The real sample** is the election-keyword subset of each outlet's feed in one dataset. Fox (55%) and AP (61%)
    tweets fall disproportionately before 21 July.
 4. **Prompt wording matters.**
@@ -564,23 +529,20 @@ mainstream outlets.
    channel is weak.
 6. **Data-driven equivalence margin.** The ±0.099 margin was set after the data were seen (logged as a deviation). The
    pre-registered ±0.4 margin is uninformative.
-7. **The RL study** uses a 0.5B model on consumer hardware, few seeds, and a single reward model. Its conclusions
-   concern optimisation against this proxy, not the outlets.
 
-## 12. Ethics
+## 10. Ethics
 
 This study generates text impersonating real news organisations:
 - **Labelling and storage:** generated tweets are stored only as labelled research data, and published examples are
   masked.
-- **RL adapters:** these are trained to imitate outlets and are not released.
 - **Real outlet distributions** are used descriptively, never as normative targets.
 - **Consent:** real outlets cannot consent to being imitated.
 - **Real tweets:** the repository currently contains the full text of the source dataset. Following X's terms and
   common practice, a public release should include tweet IDs only (flagged to the authors).
 
-## 13. Reproducibility
+## 11. Reproducibility
 
-Everything in this paper is reproduced by the commands below, from the repository root with the project environment.
+Everything in this paper is reproduced by the commands below, from the repository root with the environment pinned in `requirements-study.txt` (see `docs/STATUS.md`).
 API steps read the key from the macOS Keychain.
 
 1. `python -m study.clean_real` — cleaned real set
@@ -589,9 +551,9 @@ API steps read the key from the macOS Keychain.
 4. `python -m study.judge rate|identify --set …` — judges, via the Batch API
 5. `python -m study.swap build` — counterfactuals
 6. `python -m study.data` — unit table
-7. `python -m study.analyze --B 10000`, `python -m study.analyze_extra`, `python -m study.reliability` — analyses
+7. `python -m study.analyze --B 10000`, `python -m study.analyze_extra`, `python -m study.reliability`,
+   `python -m study.v1_revisited` — analyses
 8. `python -m study.figures` — figures
-9. `sh study/rl_queue.sh`, `python -m study.rl_eval`, `python -m study.rl_analyze score|report` — RL
 
 The protocol and its change log are in `docs/protocol_v2.md`. `study/audit_barriers.py` verifies the information
 barriers. Total API cost was about US$35.
@@ -606,11 +568,8 @@ barriers. Total API cost was about US$35.
 - Burnham, M. et al. (2024). Political DEBATE: Efficient zero-shot and few-shot classifiers for political text. arXiv:2409.02078.
 - Cheng, M. et al. (2023). CoMPosT: Characterizing and evaluating caricature in LLM simulations. *EMNLP*.
 - Egami, N. et al. (2023). Using imperfect surrogates for downstream inference: Design-based supervised learning. *NeurIPS*.
-- Gao, L., Schulman, J., & Hilton, J. (2023). Scaling laws for reward model overoptimization. *ICML*.
 - Horych, T. et al. (2024). MAGPIE: Multi-task analysis of media-bias generalization. *LREC-COLING*.
-- Liu, Z. et al. (2025). Understanding R1-zero-like training: A critical perspective (Dr. GRPO). *COLM*. arXiv:2503.20783.
 - Monroe, B., Colaresi, M., & Quinn, K. (2008). Fightin' words. *Political Analysis*.
-- Pan, A., Bhatia, K., & Steinhardt, J. (2022). The effects of reward misspecification. *ICLR*.
 - Panickssery, A., Bowman, S., & Feng, S. (2024). LLM evaluators recognize and favor their own generations. *NeurIPS*.
 - Robertson, R. et al. (2018). Auditing partisan audience bias within Google Search. *CSCW*.
 - Santurkar, S. et al. (2023). Whose opinions do language models reflect? *ICML*.

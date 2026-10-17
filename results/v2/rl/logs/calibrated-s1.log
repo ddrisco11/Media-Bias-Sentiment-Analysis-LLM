@@ -1,0 +1,33 @@
+W1016 23:37:39.559000 67008 .venv/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/redirects.py:35] NOTE: Redirects are currently not supported in MacOs.
+[transformers] `torch_dtype` is deprecated! Use `dtype` instead!
+Loading weights:   0%|          | 0/290 [00:00<?, ?it/s]Loading weights:  43%|████▎     | 124/290 [00:00<00:00, 1127.14it/s]Loading weights:  88%|████████▊ | 256/290 [00:00<00:00, 1233.53it/s]Loading weights: 100%|██████████| 290/290 [00:00<00:00, 1245.15it/s]
+/Users/kushaan/Code/Media-Bias-Sentiment-Analysis-LLM/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+Loading weights:   0%|          | 0/394 [00:00<?, ?it/s]Loading weights: 100%|██████████| 394/394 [00:00<00:00, 7085.46it/s]
+step 1 72.31s reward -0.707 kl 0.00 fail 0.59 tv 0.329
+step 2 84.29s reward -0.865 kl -0.00 fail 0.70 tv 0.327
+step 3 80.3s reward -0.764 kl -0.01 fail 0.59 tv 0.336
+step 4 88.28s reward -0.723 kl -0.03 fail 0.56 tv 0.344
+step 5 82.93s reward -0.712 kl 0.06 fail 0.53 tv 0.339
+step 6 36.23s reward -0.678 kl 0.24 fail 0.42 tv 0.391
+step 7 48.42s reward -0.529 kl 0.39 fail 0.30 tv 0.389
+step 8 58.95s reward -0.509 kl 0.63 fail 0.31 tv 0.355
+step 9 451.45s reward -0.455 kl 0.86 fail 0.24 tv 0.365
+step 10 947.36s reward -0.424 kl 1.16 fail 0.20 tv 0.356
+step 11 137.26s reward -0.387 kl 1.48 fail 0.15 tv 0.348
+step 12 450.21s reward -0.339 kl 2.05 fail 0.12 tv 0.309
+step 13 237.81s reward -0.366 kl 2.35 fail 0.09 tv 0.329
+step 14 46.73s reward -0.339 kl 2.87 fail 0.07 tv 0.315
+step 15 75.12s reward -0.334 kl 3.13 fail 0.05 tv 0.313
+step 16 41.12s reward -0.286 kl 3.04 fail 0.06 tv 0.271
+step 17 49.15s reward -0.259 kl 2.90 fail 0.01 tv 0.270
+step 18 51.83s reward -0.369 kl 3.26 fail 0.06 tv 0.285
+step 19 44.0s reward -0.313 kl 3.65 fail 0.04 tv 0.271
+step 20 41.26s reward -0.299 kl 3.39 fail 0.03 tv 0.293
+step 21 31.13s reward -0.293 kl 3.15 fail 0.04 tv 0.286
+step 22 52.19s reward -0.333 kl 2.70 fail 0.06 tv 0.318
+step 23 196.16s reward -0.242 kl 2.67 fail 0.04 tv 0.273
+step 24 1196.02s reward -0.289 kl 3.12 fail 0.06 tv 0.258
+step 25 1485.65s reward -0.330 kl 2.69 fail 0.06 tv 0.291
+/opt/homebrew/Cellar/python@3.13/3.13.13/Frameworks/Python.framework/Versions/3.13/lib/python3.13/multiprocessing/resource_tracker.py:400: UserWarning: resource_tracker: There appear to be 1 leaked semaphore objects to clean up at shutdown: {'/loky-67008-pgaih22m'}
+  warnings.warn(

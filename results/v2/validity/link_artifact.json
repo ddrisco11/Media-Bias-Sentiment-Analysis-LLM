@@ -18,14 +18,14 @@
     "share_left": 0.41968253968253966,
     "share_center": 0.37777777777777777,
     "share_right": 0.20253968253968255,
-    "net_soft": -21.242923520482567
+    "net_soft": -21.242924802305005
   },
   "generated_with_link": {
     "n": 3150,
     "share_left": 0.6673015873015873,
     "share_center": 0.04158730158730159,
     "share_right": 0.2911111111111111,
-    "net_soft": -37.104583148127674
+    "net_soft": -37.10458311092018
   },
   "real_label_flip_rate": 0.37450549450549453,
   "generated_label_flip_rate": 0.3673015873015873

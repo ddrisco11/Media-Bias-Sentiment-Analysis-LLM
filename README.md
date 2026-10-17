@@ -10,6 +10,13 @@ It is a model-generated baseline, not a forecast, a human judgment, or a standar
 for how the outlet should report. The project’s “sentiment” measure is U.S.
 political leaning—left, center, or right—rather than positive/negative emotion.
 
+> **v2 (current work): read [docs/STATUS.md](docs/STATUS.md) first.** v2 re-examines v1 with a pre-registered
+> protocol ([docs/protocol_v2.md](docs/protocol_v2.md)), validity checks, a blind LLM judge and new generation
+> conditions. The working paper is [docs/paper/paper.md](docs/paper/paper.md). Several v1 results below turn out to
+> be classifier artifacts: a trailing link changes the classifier's label for 37% of tweets, and swapping party names
+> moves its score on neutral text by about 80 points. See paper section 6.4 for how each v1 gap changes.
+> Environment: `requirements-study.txt`; code: `study/`.
+
 ## V1: real versus expected leaning
 
 The primary comparison uses **2,500 real tweets** (500 per outlet) and

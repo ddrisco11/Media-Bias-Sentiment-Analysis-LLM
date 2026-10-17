@@ -47,7 +47,7 @@ a normative target.
 - **RQ3 Measurement validity.** Is M1 valid on these texts? Do the measures agree?
 - **RQ4 Robustness.** Do RQ1 conclusions hold across wording, time anchor, generator
   model, and one versus five voices per request?
-- **RQ5 Optimising a bias proxy.** Does RL against M1 calibrate an open model's outlet
+- **RQ5 Optimising a bias proxy.** *(Deferred; see change log v2.8.)* Does RL against M1 calibrate an open model's outlet
   voices toward the real outlets, judged by measures it was not trained on? Or does
   it reward-hack M1?
 
@@ -75,7 +75,7 @@ Decision rules, fixed before data:
   |Δ| > 20 points or a label-flip rate > 15%. On partisan items, report how well M1's
   change agrees with the judge's change. Name-sensitivity promotes the judge to
   co-primary.
-- **H4 (RQ5).**
+- **H4 (RQ5).** *(Deferred; see change log v2.8.)*
   - **Calibration counts as real if** the gap to the real outlet under the judge (M2)
     and under the held-out classifier (M3) shrinks, relative to the format-only
     control, by at least 50% of M1's relative shrinkage (transfer ratio ≥ 0.5). The
@@ -217,7 +217,10 @@ Validation against these labels:
 **The study's authors have not yet produced these labels. Until they do, every
 judge-based conclusion is provisional, and the paper says so.**
 
-## 7. RL study (RQ5)
+## 7. RL study (RQ5): deferred (change log v2.8)
+
+*The RL design below is kept for the record. Its code, partial runs and logs are preserved at git tag
+`archive/rl-attempt-1` and are not on the active branch.*
 
 - **Policy:**
   - Qwen2.5-Instruct with a LoRA adapter (r 16, α 32, dropout 0) on q, k, v, o, gate,
@@ -465,3 +468,24 @@ overlap with the member tweets is reported.
     generators "model-qwen" and "model-qwen-1.5b" (exploratory), from their prompt-v1 evaluation samples.
   - **Revisiting v1 (`study/v1_revisited.py`):** starting from v1's published comparison, apply one correction at a
     time and report how each moves the outlet gaps.
+- 2026-10-17, v2.8. **Scope change: the RL study (RQ5, H4, section 7) is deferred.** The authors chose to focus on
+  part 1 (RQ1–RQ4) and to redesign the RL study from scratch later.
+  - **State when stopped:**
+    - format-only seed 1 had reached step 66 of 200 (fp32, sequential);
+    - no RL checkpoint had been evaluated;
+    - no RL result was seen or reported.
+  - **Archive:** code, the protocol at v2.7, partial runs and logs are preserved at git tag `archive/rl-attempt-1`
+    (commit 71a0ddb). They were removed from the active branch.
+  - **Lessons for the redesign:**
+    - bf16 sampling on MPS produced NaNs;
+    - two fp32 runs in parallel exhausted the 64 GB of unified memory;
+    - running alone, a 0.5B step takes about 25 s and a 1.5B step about 63 s (bf16 pilot);
+    - the reward classifier's name and link sensitivity (H3) should be designed around from the start.
+- 2026-10-17, v2.9. **Environment consistency.** Installing `sentence-transformers` mid-study had upgraded `transformers`
+  from 4.57.6 to 5.20.1. Real tweets were scored under 4.57.6 and most generated tweets under 5.20.1. The two versions
+  give DeBERTa-v3 probabilities that differ by up to 0.10 for individual texts; labels did not change in a 200-text
+  check. The environment was pinned back to 4.57.6 (`requirements-study.txt`), which reproduces the original
+  real-tweet scores to within 2.5e-6. All M1 and M3 scores were recomputed under it (22,714 texts), and every analysis
+  was rerun. No reported number changed at the reported precision; the largest change was 0.1 points, in the
+  partisan swap mean. The topic and loaded-wording models were unaffected. The human-coding sample was not redrawn,
+  because its strata and inclusion probabilities were fixed when it was drawn.

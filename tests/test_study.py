@@ -1,41 +1,11 @@
 """Unit tests for the v2 study code that do not need models or the network."""
 import unittest
 
-from study import rl
 from study.common import party_mentioned, scoring_text, near_duplicate_clusters
 from study.mask import mask_outlets
 from study.stats import holm, random_effects, tost_equivalent, total_variation
 from study.swap import swap_text
 from study.data import keyword_match
-
-
-class RewardTests(unittest.TestCase):
-    def test_reward_is_zero_at_fixed_point_and_pushes_toward_target(self):
-        target = {'left': 0.5, 'center': 0.0, 'right': 0.5}
-        q_at_target = dict(target)
-        self.assertAlmostEqual(rl.leaning_reward({'left': 1, 'center': 0, 'right': 0}, target, q_at_target), 0.0)
-        q_too_left = {'left': 0.9, 'center': 0.0, 'right': 0.1}
-        right = rl.leaning_reward({'left': 0, 'center': 0, 'right': 1}, target, q_too_left)
-        left = rl.leaning_reward({'left': 1, 'center': 0, 'right': 0}, target, q_too_left)
-        self.assertGreater(right, 0)
-        self.assertLess(left, 0)
-        self.assertLessEqual(abs(right), 1)
-
-    def test_q_update_shrinks_toward_previous(self):
-        q = {'a': {'left': 1.0, 'center': 0.0, 'right': 0.0}}
-        probs = [{'left': 0.0, 'center': 0.0, 'right': 1.0}] * 16
-        new = rl.update_q(q, probs, ['a'] * 16, kappa=16)
-        self.assertAlmostEqual(new['a']['right'], 0.5)
-        self.assertAlmostEqual(sum(new['a'].values()), 1.0)
-
-    def test_group_advantages_are_mean_centred_without_scaling(self):
-        adv = rl.group_advantages([1.0, 3.0, 0.0, 0.0], 2)
-        self.assertEqual(adv, [-1.0, 1.0, 0.0, 0.0])
-
-    def test_shuffled_targets_are_a_derangement(self):
-        self.assertTrue(all(k != v for k, v in rl.DERANGEMENT.items()))
-        self.assertEqual(sorted(rl.DERANGEMENT.values()), sorted(rl.DERANGEMENT))
-        self.assertEqual(set(rl.TRAIN_TOPICS) & set(rl.HELD_OUT_TOPICS), set())
 
 
 class TextTests(unittest.TestCase):

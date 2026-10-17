@@ -1,0 +1,75 @@
+W1016 23:37:39.559000 67009 .venv/lib/python3.13/site-packages/torch/distributed/elastic/multiprocessing/redirects.py:35] NOTE: Redirects are currently not supported in MacOs.
+[transformers] `torch_dtype` is deprecated! Use `dtype` instead!
+Loading weights:   0%|          | 0/290 [00:00<?, ?it/s]Loading weights:  59%|█████▉    | 172/290 [00:00<00:00, 1693.20it/s]Loading weights: 100%|██████████| 290/290 [00:00<00:00, 1448.02it/s]
+/Users/kushaan/Code/Media-Bias-Sentiment-Analysis-LLM/.venv/lib/python3.13/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+Loading weights:   0%|          | 0/394 [00:00<?, ?it/s]Loading weights: 100%|██████████| 394/394 [00:00<00:00, 6836.48it/s]
+step 1 69.24s reward -0.588 kl 0.00 fail 0.59 tv 0.329
+step 2 78.2s reward -0.699 kl -0.01 fail 0.70 tv 0.327
+step 3 78.58s reward -0.561 kl -0.02 fail 0.56 tv 0.339
+step 4 89.39s reward -0.576 kl 0.02 fail 0.57 tv 0.305
+step 5 98.58s reward -0.518 kl 0.11 fail 0.51 tv 0.314
+step 6 49.45s reward -0.453 kl 0.30 fail 0.44 tv 0.307
+step 7 49.26s reward -0.423 kl 0.45 fail 0.40 tv 0.329
+step 8 84.25s reward -0.387 kl 0.74 fail 0.35 tv 0.336
+step 9 908.03s reward -0.270 kl 1.40 fail 0.20 tv 0.321
+step 10 441.53s reward -0.255 kl 1.36 fail 0.19 tv 0.331
+step 11 36.93s reward -0.189 kl 1.77 fail 0.10 tv 0.314
+step 12 51.81s reward -0.279 kl 3.08 fail 0.12 tv 0.308
+step 13 26.56s reward -0.261 kl 3.22 fail 0.10 tv 0.330
+step 14 43.91s reward -0.189 kl 3.29 fail 0.03 tv 0.323
+step 15 58.32s reward -0.222 kl 3.19 fail 0.06 tv 0.309
+step 16 30.15s reward -0.204 kl 2.58 fail 0.07 tv 0.325
+step 17 24.59s reward -0.178 kl 3.05 fail 0.03 tv 0.314
+step 18 51.42s reward -0.209 kl 2.44 fail 0.09 tv 0.324
+step 19 35.96s reward -0.170 kl 2.89 fail 0.03 tv 0.344
+step 20 28.74s reward -0.176 kl 2.78 fail 0.04 tv 0.337
+step 21 103.14s reward -0.166 kl 2.82 fail 0.03 tv 0.387
+step 22 59.69s reward -0.149 kl 2.48 fail 0.03 tv 0.330
+step 23 75.19s reward -0.188 kl 2.26 fail 0.07 tv 0.334
+step 24 55.67s reward -0.132 kl 2.40 fail 0.01 tv 0.349
+step 25 206.38s reward -0.160 kl 2.69 fail 0.03 tv 0.344
+step 26 735.02s reward -0.148 kl 2.70 fail 0.01 tv 0.332
+step 27 177.18s reward -0.150 kl 2.50 fail 0.03 tv 0.314
+step 28 145.8s reward -0.167 kl 2.84 fail 0.03 tv 0.299
+step 29 641.65s reward -0.139 kl 2.27 fail 0.03 tv 0.304
+step 30 509.94s reward -0.146 kl 2.41 fail 0.03 tv 0.285
+step 31 763.09s reward -0.169 kl 2.38 fail 0.05 tv 0.315
+step 32 140.79s reward -0.123 kl 2.45 fail 0.00 tv 0.311
+step 33 224.28s reward -0.159 kl 2.17 fail 0.05 tv 0.332
+step 34 26.07s reward -0.144 kl 2.37 fail 0.03 tv 0.324
+step 35 22.25s reward -0.140 kl 2.30 fail 0.03 tv 0.281
+step 36 20.61s reward -0.122 kl 2.18 fail 0.01 tv 0.349
+step 37 21.17s reward -0.116 kl 2.07 fail 0.01 tv 0.350
+step 38 22.84s reward -0.138 kl 2.52 fail 0.01 tv 0.355
+step 39 26.68s reward -0.152 kl 2.30 fail 0.04 tv 0.318
+step 40 20.71s reward -0.134 kl 1.93 fail 0.04 tv 0.336
+step 41 25.42s reward -0.110 kl 1.96 fail 0.01 tv 0.342
+step 42 25.6s reward -0.135 kl 2.21 fail 0.03 tv 0.357
+step 43 22.7s reward -0.152 kl 2.04 fail 0.05 tv 0.373
+step 44 25.72s reward -0.127 kl 2.04 fail 0.03 tv 0.378
+step 45 22.87s reward -0.122 kl 1.93 fail 0.03 tv 0.383
+step 46 21.98s reward -0.108 kl 1.91 fail 0.01 tv 0.364
+step 47 23.85s reward -0.163 kl 1.76 fail 0.07 tv 0.358
+step 48 20.03s reward -0.100 kl 1.76 fail 0.01 tv 0.323
+step 49 23.78s reward -0.089 kl 1.79 fail 0.00 tv 0.340
+step 50 20.7s reward -0.087 kl 1.74 fail 0.00 tv 0.323
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+step 51 21.59s reward -0.109 kl 1.68 fail 0.03 tv 0.320
+step 52 27.67s reward -0.178 kl 1.57 fail 0.10 tv 0.319
+step 53 22.87s reward -0.136 kl 1.46 fail 0.06 tv 0.366
+step 54 21.87s reward -0.134 kl 1.43 fail 0.06 tv 0.304
+step 55 27.21s reward -0.148 kl 1.70 fail 0.06 tv 0.332
+step 56 68.26s reward -0.137 kl 1.49 fail 0.06 tv 0.291
+step 57 21.93s reward -0.094 kl 1.62 fail 0.01 tv 0.309
+step 58 27.37s reward -0.115 kl 1.80 fail 0.03 tv 0.352
+step 59 48.75s reward -0.101 kl 1.77 fail 0.01 tv 0.335
+step 60 16.22s reward -0.081 kl 1.61 fail 0.00 tv 0.338
+step 61 25.3s reward -0.125 kl 1.49 fail 0.05 tv 0.329
+step 62 18.42s reward -0.094 kl 1.62 fail 0.01 tv 0.350
+step 63 20.53s reward -0.126 kl 1.52 fail 0.05 tv 0.369
+step 64 23.81s reward -0.113 kl 1.75 fail 0.03 tv 0.355
+step 65 24.44s reward -0.122 kl 1.69 fail 0.04 tv 0.375
+step 66 18.61s reward -0.105 kl 1.85 fail 0.01 tv 0.362
+/opt/homebrew/Cellar/python@3.13/3.13.13/Frameworks/Python.framework/Versions/3.13/lib/python3.13/multiprocessing/resource_tracker.py:400: UserWarning: resource_tracker: There appear to be 1 leaked semaphore objects to clean up at shutdown: {'/loky-67009-wdti6ivm'}
+  warnings.warn(

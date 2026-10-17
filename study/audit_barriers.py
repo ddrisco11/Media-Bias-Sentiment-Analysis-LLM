@@ -31,9 +31,7 @@ def main():
     report = {'created_at': now(), 'generation': {}, 'judge_inputs': {}, 'human_sheets': {}}
     files = list((RESULTS / 'generations').glob('*/generations.jsonl')) + \
         [ROOT / 'dataset' / 'synthetic' / r / 'generations.jsonl' for r in ('main-v1', 'pilot-v1')]
-    from study.rl import TEMPLATE
     prompts_by_file = {str(p.relative_to(ROOT)): {r['prompt'] for r in read_jsonl(p)} for p in files if p.exists()}
-    prompts_by_file['study/rl.py TEMPLATE'] = {TEMPLATE}
     for name, prompts in prompts_by_file.items():
         hits = {p[:120]: prompt_hits(p) for p in prompts if prompt_hits(p)}
         report['generation'][name] = {'unique_prompts': len(prompts), 'prompts_with_terms': len(hits), 'examples': dict(list(hits.items())[:5])}
