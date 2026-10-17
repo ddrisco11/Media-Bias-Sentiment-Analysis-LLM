@@ -7,3 +7,4 @@ __pycache__/
 .env
 .env.*
 *.key
+results/v2/scores/*.tmp
