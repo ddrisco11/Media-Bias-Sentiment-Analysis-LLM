@@ -47,6 +47,10 @@ def judge_results(model, sets, task='rate'):
             continue
         flips = {r['item']: r['flipped'] for r in read_jsonl(d / 'items.jsonl')}
         for r in read_jsonl(d / 'results.jsonl'):
+            # Results whose id is not in the current items file come from an earlier masking version: skip them,
+            # so a flip flag is never guessed (audit, 2026-10-17).
+            if r['custom_id'] not in flips:
+                continue
             if r.get('type') == 'succeeded' and r.get('parsed'):
                 out[r['custom_id']] = unflip(r['parsed'], flips.get(r['custom_id'])) if task == 'rate' else r['parsed']
                 if task == 'rate':

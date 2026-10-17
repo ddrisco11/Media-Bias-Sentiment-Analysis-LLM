@@ -8,14 +8,17 @@ import re
 from study.common import scoring_text
 
 OUTLET_PATTERNS = [
-    r'@?nytimes\b', r'@?nytopinion\b', r'\bNew York Times\b', r'\bThe Times\b', r'\bNYT\b',
+    r'@?nytimes\b', r'@?nytopinion\b', r'\bNew York Times\b', r'\bNYT\b',
     r'#?\bFox ?News\b(?: Digital| Channel)?', r'@?FoxNews\b', r'\bFox\b(?= (?:News|Business|Digital|reporting|team|poll|has|is))',
     r'@?Reuters\b', r'\bThomson Reuters\b',
     r'\bAssociated Press\b', r'@AP\b', r'\bAP(?= (?:News|reporting|is|has|analysis|explainer|VoteCast|Fact Check|team|poll|reporters?))',
     r"\bAP's\b", r'\bThe AP\b',
     r'\bABC News(?: Live)?\b', r'@ABC\b', r'\bABC(?= (?:News|reporting|team|poll|Live|is|has|anchor))', r'\babc news\b', r"\bABC's\b",
-    r'\bGood Morning America\b', r'\bWorld News Tonight\b', r'\bThis Week\b', r'\bFox & Friends\b', r'\bThe Daily\b',
+    r'\bGood Morning America\b', r'\bWorld News Tonight\b', r'\bFox & Friends\b',
 ]
+# Show and paper names that are also everyday phrases ("this week", "the daily", "the times") are matched only in
+# title case, after an audit found the case-insensitive versions masking 231 ordinary uses.
+CASE_SENSITIVE = re.compile(r'\bThis Week\b|\bThe Daily\b|\bThe Times\b')
 SELF_REFERENCE = [
     r'\b(?:our|my) (?:team|reporters?|newsroom|coverage|correspondents?|polling|poll|analysis|reporting|live blog|journalists?|fact[- ]checkers?|editors?)\b',
     r'\b(?:Stay|Follow along|Tune in|Watch|Read more|Read|Join us|Follow) (?:with|on|at|to) \[OUTLET\]',
@@ -35,6 +38,7 @@ _self = re.compile('|'.join(SELF_REFERENCE), re.I)
 def mask_outlets(text):
     text = scoring_text(text)
     text = _outlets.sub(MASK, text)
+    text = CASE_SENSITIVE.sub(MASK, text)
     text = HANDLE.sub('@[ACCOUNT]', text)
     text = POLLSTERS.sub('[POLLSTER]', text)
     text = _self.sub(lambda m: re.sub(r'\b(?:our|my)\b', "[OUTLET]'s", m.group(0), flags=re.I)

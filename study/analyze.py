@@ -164,9 +164,9 @@ def reality_gap(units, gen_condition, B, keyword_only):
             g = wmean(means, [('generated', o) + s for s in cells], w)
             r = wmean(means, [('real', o) + s for s in cells], w)
             rows += [g - r]
-            # unstandardised difference
-            gu = wmean(means, [('generated', o) + s for s in gen_cells[o]], [sum(1 for u in gen if u['group'] == o and (u['predicted_topic'], u['party']) == s) for s in gen_cells[o]])
-            ru = wmean(means, [('real', o) + s for s in real_w[o]], list(real_w[o].values()))
+            # unstandardised levels: plain means over units with a value for each metric (audit fix, 2026-10-17)
+            gu = bs.plain_mean([('generated', o) + s for s in gen_cells[o]])
+            ru = bs.plain_mean([('real', o) + s for s in real_w[o]])
             rows += [gu - ru, gu, ru]
         return np.stack(rows)
     res = bs.run(est, B)

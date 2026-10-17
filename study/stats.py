@@ -61,15 +61,24 @@ class Bootstrap:
 
     def means(self, draw=False):
         out = {}
+        self.last = {}  # per stratum (sum, count) of the current draw, for plain means across strata
         for s, (sums, counts) in self.packed.items():
             if draw:
                 idx = self.rng.integers(0, len(sums), len(sums))
                 tot, n = sums[idx].sum(0), counts[idx].sum(0)
             else:
                 tot, n = sums.sum(0), counts.sum(0)
+            self.last[s] = (tot, n)
             with np.errstate(invalid='ignore', divide='ignore'):
                 out[s] = tot / n
         return out
+
+    def plain_mean(self, keys):
+        """Mean over all units in the given strata, counting only units with a value for each metric."""
+        tot = sum(self.last[k][0] for k in keys if k in self.last)
+        n = sum(self.last[k][1] for k in keys if k in self.last)
+        with np.errstate(invalid='ignore', divide='ignore'):
+            return tot / n
 
     def run(self, estimand, B=B_DEFAULT, alpha=0.05):
         point = np.asarray(estimand(self.means()), dtype=float)
@@ -107,8 +116,11 @@ def tost_equivalent(ci90, margin):
 def random_effects(estimates, ses):
     """DerSimonian-Laird pooled estimate, 95% CI and tau^2."""
     y = np.asarray(estimates, float)
-    # Cells where the judge rated every tweet 0 give a bootstrap SE of exactly 0; floor it so pooling is defined.
-    s = np.maximum(np.asarray(ses, float), 1e-6)
+    # Cells where the judge rated every tweet 0 give a bootstrap SE of exactly 0. Replace those with the smallest
+    # positive SE in the set (conservative), so one degenerate cell cannot dominate the pooled estimate or tau^2.
+    s = np.asarray(ses, float)
+    positive = s[s > 0]
+    s = np.where(s > 0, s, positive.min() if len(positive) else 1.0)
     w = 1 / s ** 2
     fixed = np.sum(w * y) / np.sum(w)
     q = np.sum(w * (y - fixed) ** 2)

@@ -21,8 +21,8 @@ def swap_text(text):
     if SKIP.search(text):
         return None
     has = {n: bool(re.search(rf'\b{n}\b', text, re.I)) for n in ('trump', 'harris', 'biden', 'vance', 'walz')}
-    if has['trump'] and has['harris'] and has['biden']:
-        return None
+    if has['harris'] and has['biden']:
+        return None  # two Democratic candidates: no clean one-to-one swap (audit, 2026-10-17)
     dem = 'biden' if has['biden'] and not has['harris'] else 'harris'
     dem_first, dem_full = ('Joe', 'Joe Biden') if dem == 'biden' else ('Kamala', 'Kamala Harris')
     pairs = [(r'\bDonald Trump\b', dem_full), (rf'\b{dem_full}\b', 'Donald Trump'), (r'\bDonald\b', dem_first),
@@ -32,11 +32,12 @@ def swap_text(text):
              (r'\bRepublican\b', 'Democratic'), (r'\bDemocratic\b', 'Republican'), (r'\bGOP\b', 'Democratic Party'),
              (r'\bDemocrat\b', 'Republican'), (r'\bRNC\b', 'DNC'), (r'\bDNC\b', 'RNC')]
     out, slots = text, []
+
+    def put_case(m, replacement):
+        slots.append(replacement.upper() if m.group(0).isupper() and len(m.group(0)) > 3 else replacement)
+        return TOKEN.format(len(slots) - 1)
     for i, (pattern, replacement) in enumerate(pairs):
-        def put(m, i=i, replacement=replacement):
-            slots.append(replacement)
-            return TOKEN.format(len(slots) - 1)
-        out = re.sub(pattern, put, out)
+        out = re.sub(pattern, lambda m, i=i, replacement=replacement: put_case(m, replacement), out, flags=re.I)
     for i, replacement in enumerate(slots):
         out = out.replace(TOKEN.format(i), replacement)
     return out if out != text else None

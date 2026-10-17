@@ -37,7 +37,7 @@ def evaluated(run, step):
 def summary_md(res):
     lines = [f'# RL interim report ({now()[:16]} UTC)', '',
              'Interim, not final. Intermediate checkpoints use small samples (5 per outlet x training topic, 10 per outlet x',
-             'held-out topic); step 300 uses the full pre-registered sample. Lower TV = closer to the real outlet\'s label',
+             'held-out topic); the final checkpoint (step 200) uses the full sample. Lower TV = closer to the real outlet\'s label',
              'distribution under that measure. M1 is the reward model; M3 and the judge never enter training.', '',
              '| Run | Step | Split | Format fail | TV M1 (reward) | TV M1, names masked | TV M3 (held-out) | TV judge | Party-mention overshoot | Distinct-2 | Duplicates |',
              '|---|---:|---|---:|---:|---:|---:|---:|---:|---:|---:|']
@@ -52,7 +52,7 @@ def summary_md(res):
               ', '.join(f"{k} {v['mean']:.3f}" for k, v in nf.items()), '',
               '![RL curves](figures/fig7_rl_curves.png)', '']
     if res.get('h4_contrasts'):
-        lines += ['## Calibrated versus format-only at step 300', '', '```', json.dumps(res['h4_contrasts'], indent=1)[:4000], '```']
+        lines += ['## Calibrated versus format-only at the final checkpoint (step 200)', '', '```', json.dumps(res['h4_contrasts'], indent=1)[:4000], '```']
     return '\n'.join(lines) + '\n'
 
 

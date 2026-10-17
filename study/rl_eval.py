@@ -20,6 +20,7 @@ from study.generate import TEMPLATES
 from study.rl import HELD_OUT_TOPICS, TEMPLATE, TRAIN_TOPICS, CONFIG, format_fail
 
 BASE_MODEL = 'Qwen/Qwen2.5-0.5B-Instruct'
+FINAL_STEP = 200
 
 
 def jobs(n_train, n_held, final, base):
@@ -97,8 +98,9 @@ def main():
         evaluate('base', 0)
         return
     for s in args.steps:
-        # Intermediate checkpoints get a smaller sample; the pre-registered final checkpoint gets the full one.
-        if s == 300:
+        # Intermediate checkpoints get a smaller sample; the final checkpoint (step 200 after the v2.6 feasibility
+        # deviation; 300 in the original protocol) gets the full one.
+        if s >= FINAL_STEP:
             evaluate(args.run, s, final=True)
         else:
             evaluate(args.run, s, n_train=5, n_held=10)

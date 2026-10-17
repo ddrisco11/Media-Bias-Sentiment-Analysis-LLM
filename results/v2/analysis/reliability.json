@@ -1,136 +1,136 @@
 {
-  "created_at": "2026-10-17T04:14:23.755667+00:00",
+  "created_at": "2026-10-17T04:53:29.442164+00:00",
   "human_set_items": 480,
   "coverage": {
     "sonnet": 480,
     "opus": 480,
-    "qwen": 28
+    "qwen": 0
   },
   "sonnet_vs_opus": {
     "slant": {
-      "alpha": 0.7967152061246893,
+      "alpha": 0.7734376097126345,
       "n_both": 480,
-      "exact_agreement": 0.9229166666666667,
-      "mean_difference": -0.014583333333333334
+      "exact_agreement": 0.9145833333333333,
+      "mean_difference": -0.010416666666666666
     },
     "stance_dem": {
-      "alpha": 0.8411741972219596,
-      "n_both": 279,
-      "exact_agreement": 0.921146953405018,
-      "mean_difference": 0.035842293906810034
+      "alpha": 0.7634965265655984,
+      "n_both": 296,
+      "exact_agreement": 0.8986486486486487,
+      "mean_difference": 0.07432432432432433
     },
     "stance_rep": {
-      "alpha": 0.783422813449156,
-      "n_both": 281,
-      "exact_agreement": 0.9466192170818505,
-      "mean_difference": -0.0035587188612099642
+      "alpha": 0.7762637575076075,
+      "n_both": 289,
+      "exact_agreement": 0.9446366782006921,
+      "mean_difference": 0.01730103806228374
     },
     "genre": {
-      "alpha": 0.7554968047311041,
+      "alpha": 0.8292851254720779,
       "n_both": 480,
-      "exact_agreement": 0.8083333333333333,
+      "exact_agreement": 0.8645833333333334,
       "mean_difference": null
     },
     "dem_na": {
-      "alpha": 0.886448921597202,
+      "alpha": 0.9191475409836065,
       "n_both": 480,
-      "exact_agreement": 0.9458333333333333,
+      "exact_agreement": 0.9625,
       "mean_difference": 0.0125
     }
   },
   "sonnet_vs_qwen": {
     "slant": {
-      "alpha": -0.27999978456169083,
-      "n_both": 28,
-      "exact_agreement": 0.17857142857142858,
-      "mean_difference": -0.9285714285714286
+      "alpha": null,
+      "n_both": 0,
+      "exact_agreement": null,
+      "mean_difference": null
     },
     "stance_dem": {
-      "alpha": 0.54732868757259,
-      "n_both": 14,
-      "exact_agreement": 0.21428571428571427,
-      "mean_difference": -0.2857142857142857
+      "alpha": null,
+      "n_both": 0,
+      "exact_agreement": null,
+      "mean_difference": null
     },
     "stance_rep": {
-      "alpha": 0.40440244095736255,
-      "n_both": 12,
-      "exact_agreement": 0.16666666666666666,
-      "mean_difference": 0.16666666666666666
+      "alpha": null,
+      "n_both": 0,
+      "exact_agreement": null,
+      "mean_difference": null
     },
     "genre": {
-      "alpha": 0.12350597609561753,
-      "n_both": 28,
-      "exact_agreement": 0.5714285714285714,
+      "alpha": null,
+      "n_both": 0,
+      "exact_agreement": null,
       "mean_difference": null
     },
     "dem_na": {
-      "alpha": 0.5588235294117647,
-      "n_both": 28,
-      "exact_agreement": 0.7857142857142857,
-      "mean_difference": -0.14285714285714285
+      "alpha": null,
+      "n_both": 0,
+      "exact_agreement": null,
+      "mean_difference": null
     }
   },
   "opus_vs_qwen": {
     "slant": {
-      "alpha": 0.0028764836377558334,
-      "n_both": 28,
-      "exact_agreement": 0.21428571428571427,
-      "mean_difference": -0.7857142857142857
+      "alpha": null,
+      "n_both": 0,
+      "exact_agreement": null,
+      "mean_difference": null
     },
     "stance_dem": {
-      "alpha": 0.17837138150152976,
-      "n_both": 14,
-      "exact_agreement": 0.21428571428571427,
-      "mean_difference": -0.7142857142857143
+      "alpha": null,
+      "n_both": 0,
+      "exact_agreement": null,
+      "mean_difference": null
     },
     "stance_rep": {
-      "alpha": 0.2734238941135493,
-      "n_both": 11,
-      "exact_agreement": 0.18181818181818182,
-      "mean_difference": 0.18181818181818182
+      "alpha": null,
+      "n_both": 0,
+      "exact_agreement": null,
+      "mean_difference": null
     },
     "genre": {
-      "alpha": 0.1598119858989423,
-      "n_both": 28,
-      "exact_agreement": 0.5357142857142857,
+      "alpha": null,
+      "n_both": 0,
+      "exact_agreement": null,
       "mean_difference": null
     },
     "dem_na": {
-      "alpha": 0.5588235294117647,
-      "n_both": 28,
-      "exact_agreement": 0.7857142857142857,
-      "mean_difference": -0.14285714285714285
+      "alpha": null,
+      "n_both": 0,
+      "exact_agreement": null,
+      "mean_difference": null
     }
   },
   "sonnet_test_retest": {
     "slant": {
-      "alpha": 0.8972547882881559,
-      "n_both": 200,
-      "exact_agreement": 0.965,
-      "mean_difference": -0.005
+      "alpha": 0.8973267109339269,
+      "n_both": 196,
+      "exact_agreement": 0.9642857142857143,
+      "mean_difference": -0.00510204081632653
     },
     "stance_dem": {
-      "alpha": 0.923661717908275,
-      "n_both": 122,
-      "exact_agreement": 0.9754098360655737,
-      "mean_difference": -0.00819672131147541
+      "alpha": 0.9236569473698184,
+      "n_both": 119,
+      "exact_agreement": 0.9747899159663865,
+      "mean_difference": -0.008403361344537815
     },
     "stance_rep": {
-      "alpha": 0.9650031989718741,
-      "n_both": 119,
-      "exact_agreement": 0.9831932773109243,
+      "alpha": 0.9649900432578391,
+      "n_both": 117,
+      "exact_agreement": 0.9829059829059829,
       "mean_difference": 0.0
     },
     "genre": {
-      "alpha": 0.9540488960547531,
-      "n_both": 200,
-      "exact_agreement": 0.965,
+      "alpha": 0.9530692729766804,
+      "n_both": 196,
+      "exact_agreement": 0.9642857142857143,
       "mean_difference": null
     },
     "dem_na": {
-      "alpha": 0.9576612903225806,
-      "n_both": 200,
-      "exact_agreement": 0.98,
+      "alpha": 0.9569146005509642,
+      "n_both": 196,
+      "exact_agreement": 0.9795918367346939,
       "mean_difference": 0.0
     }
   }

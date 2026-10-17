@@ -163,7 +163,8 @@ def report():
         res['noise_floor'][f'm1_n{n}'] = noise_floor(ref, n, 'm1')
         res['noise_floor'][f'm3_n{n}'] = noise_floor(ref, n, 'm3')
     # Pre-registered contrast at the final checkpoint: calibrated vs format-only, per seed pairing and pooled.
-    final = {run: steps.get(300) for run, steps in res['evals'].items() if steps.get(300)}
+    from study.rl_eval import FINAL_STEP
+    final = {run: steps.get(FINAL_STEP) for run, steps in res['evals'].items() if steps.get(FINAL_STEP)}
     base = res['evals'].get('base', {}).get(0)
     def cond(run):
         return run.rsplit('-s', 1)[0]

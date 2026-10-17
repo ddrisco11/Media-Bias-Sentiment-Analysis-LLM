@@ -14,8 +14,8 @@ OUTLET_NAMES = {'nytimes': 'New York Times', 'foxnews': 'Fox News', 'reuters': '
 LABELS = ['left', 'center', 'right']
 
 URL = re.compile(r'\s*https?://\S+')
-REPUBLICAN = re.compile(r'\b(trump|vance|republicans?|gop|maga)\b', re.I)
-DEMOCRAT = re.compile(r'\b(harris|biden|walz|democrats?|democratic)\b', re.I)
+REPUBLICAN = re.compile(r'\b(trump|vance|republicans?|gop|maga|rnc|desantis|haley)\b', re.I)
+DEMOCRAT = re.compile(r'\b(harris|biden|walz|democrats?|democratic|dems?|dnc)\b', re.I)
 # "Harris County" and similar place names are not party mentions.
 NOT_PARTY = re.compile(r'\bHarris County\b|\bDemocratic Republic\b', re.I)
 

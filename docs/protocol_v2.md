@@ -406,3 +406,50 @@ overlap with the member tweets is reported.
     first 40 replies were invalid and it appeared to mishandle the reversed scale. The flip exists only to detect
     order effects in the primary judge (M2), where they were negligible. The local judge was also paused while
     RL trained, because the two processes competed for the GPU.
+- 2026-10-17, v2.5. After the first full analysis, an independent peer review and an independent code audit were
+  done by subagents that were not involved in the analysis. Everything here was recorded after the main results were
+  seen.
+  - **Code fixes from the audit. None reverses a headline result.**
+    - Table 2 levels are now plain means over units with a value.
+    - Judge results from earlier masking versions are ignored, so a flip is never guessed.
+    - Show names that are also common phrases ("This Week", "The Daily", "The Times") are masked only in title
+      case. Previously 231 ordinary uses were masked. The changed items were re-judged.
+    - Party swaps skip texts naming both Harris and Biden, and replace names whatever their case.
+    - Party keywords add RNC, DNC, Dems, DeSantis and Haley.
+    - In random-effects pooling, a zero bootstrap SE is replaced by the smallest positive SE in the set, instead of
+      1e-6.
+  - **Deviations found by the review that were not logged earlier:**
+    - **H1 robustness threshold for the judge.** We used |Δ| ≥ 0.2, half the judge's directional margin. This
+      mirrors the M1 rule (7.5 is half of 15), but the protocol did not state it. It was set in code before the
+      variant results were computed. The paper reports how sensitive the conclusion is to this threshold.
+    - **Built neutral templates:** 30 were used, against 60 in the protocol.
+    - **Bootstrap strata for real tweets:** outlet × predicted topic × named party, not outlet × period. Periods are
+      analysed separately.
+    - **Headline measure:** the paper headlines the net score, not label shares. Label shares are reported in the
+      results files.
+    - **Table 1 uses main-v1.** The protocol made main-v1 exploratory for H1. H1 is decided on the five named
+      variants.
+    - **Human set:** 450 sampled items plus 30 swap pairs and 20 repeats, giving 500 rows and 480 unique texts.
+  - **Equivalence margin.** The pre-registered ±0.4 judge margin is too loose to be informative: real NYT sits
+    0.30 from the real mean. A data-driven margin of ±0.097, half the range of real non-Fox outlets, is added and
+    reported alongside it.
+  - **Post-review exploratory analyses** (`study/analyze_extra.py`), all labelled exploratory in the paper:
+    - the party-named stratum;
+    - Fox within genre;
+    - event-arm TOST, lexical overlap and event-matched individuation;
+    - the period-matched (P2) comparison;
+    - slant conditional on outlet misidentification;
+    - Jaccard 0.3/0.7 and full-set sensitivity (both pre-registered);
+    - bootstrap CIs for benchmark correlations;
+    - judge sign-reversal on swaps;
+    - judge variance by condition.
+- 2026-10-17, v2.6. RL feasibility deviation, decided before any RL evaluation output existed. Only the training-time
+  reward and KL logs had been seen.
+  - **Why:** with fp32, which the v2.4 NaN fix requires, and two runs sharing the GPU, a step took about 130 s. The full
+    design (7 runs × 300 steps) would have taken about 40 hours.
+  - **Final checkpoint:** step 200 instead of 300, for every run.
+    - calibrated-s1 and format-s1 were launched with 300 steps and are stopped right after their step-200 checkpoint.
+    - All later runs use `--steps 200`.
+  - **Order:** runs go in priority pairs: (calibrated-s1, format-s1), (calibrated-s2, shuffled-s1), (format-s2,
+    pooled-s1), then calibrated-s3. Results are reported for whatever has completed, with the completed set stated.
+  - **Evaluation:** intermediate checkpoints are 50 and 100. The step-200 checkpoint gets the full evaluation sample.
