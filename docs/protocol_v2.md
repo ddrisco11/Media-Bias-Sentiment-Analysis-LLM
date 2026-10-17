@@ -316,6 +316,34 @@ Every run directory has a manifest of settings, model IDs, package versions and
 source checksums. Generated texts are synthetic and are never presented as real
 outlet posts.
 
+## 10. Information barriers
+
+**Principle:** whatever is being evaluated never sees the evaluation criteria, and evaluators never see what they
+would need to be blind to.
+
+| Component | Sees | Never sees |
+|---|---|---|
+| Generators (Haiku, Sonnet, Opus, base Qwen) | a topic and a voice (or a neutral event description), in the protocol's prompt | rubric, classifiers, hypotheses, real tweets, the words slant/stance/left/right |
+| Event-description writer (Sonnet) | masked real tweets on one event; an instruction to write neutral facts | rubric, hypotheses, which outlet wrote which tweet |
+| RL policy | the RL prompt (same as generator prompt v1) | reward definition, M1 itself, all evaluation measures (M2, M3, M3b, M6), real tweets |
+| RL reward | M1 only | M2, M3, M3b and M6 are evaluation-only and never enter training, tuning or checkpoint selection |
+| Judges (M2, M2b, M2c) | the rubric and one masked text | source (real or generated), voice, condition, model, M1 scores, hypotheses |
+| Outlet-identification judge (M6) | the five outlet names (the task) and one masked text | whether the text is real or generated, and its condition |
+| Human coders | the instrument and masked texts in shuffled order | source, condition, M1 and judge outputs |
+| Analysis subagents | data and code they are asked to produce | the review criteria later used to evaluate their work; a separate reviewer applies those |
+
+`study/audit_barriers.py` checks the first three rows and the human sheets mechanically:
+- prompts contain no evaluation vocabulary;
+- judge inputs carry no label fields and no unmasked outlet names;
+- sheets contain no source or score columns.
+
+The audit runs before every judging round and again before release. Its last result is in
+`results/v2/validity/barrier_audit.json`.
+
+A known residual channel: event descriptions are written from the real tweets that the event-conditioned
+outputs are then compared with. They are restricted to neutral facts, with no quotations or outlet names. Lexical
+overlap with the member tweets is reported.
+
 ## Change log
 
 - 2026-10-16, v2.0: protocol written before v2 data.
@@ -331,3 +359,35 @@ outlet posts.
   - RL reward changed to a bounded squared-error form with batch-estimated q̂;
   - Dr. GRPO advantages; generation config overridden; k1 KL inside the reward;
   - shuffled and pooled controls; 3 seeds; hacking diagnostics; ethics section.
+- 2026-10-16, v2.2, procedural, no outcome data analysed:
+  - **Section 10 (information barriers)** added at the authors' request, with a mechanical audit script.
+  - **RL model:** the feasibility rule selected Qwen2.5-0.5B. The 1.5B model ran at 63 s per step, a projected
+    5.3 h per run; 0.5B ran at 27 s per step, 2.25 h per run.
+  - **Learning rate:** kept at the pre-specified 2e-5, with no tuning sweep. In the 10-step pilot, reward and
+    format compliance improved steadily.
+  - **Link validity check:** run before any judge or RL analysis. A trailing t.co link flips M1's label for 37%
+    of tweets and removes almost all "center" labels. All v2 measures therefore score text with links removed
+    (`study.common.scoring_text`).
+  - **Event-conditioned arm:** 77 adjudicated events instead of about 50. All events confirmed by the
+    adjudicator are used.
+- 2026-10-16, v2.3, adopted from a literature and tooling survey before any judge or RL outcome was examined:
+  - **Politicalness (M5b):** `mlburnham/Political_DEBATE_large_v1.0`, an NLI model, as the M1 authors recommend.
+    It is reported for all texts and RL outputs. Results are also reported for the political subset.
+  - **Caricature metrics (Cheng et al. 2023; Bisbee et al. 2024):** for each outlet, report:
+    - the within-outlet spread of scores, generated against real;
+    - an exaggeration ratio: the distance of the generated voice from the neutral voice, divided by the real
+      outlet's distance from the pooled real mean;
+    - individuation: whether a logistic-regression discriminator on sentence embeddings, cross-validated by
+      cluster, can tell generated tweets from real ones for each outlet.
+  - **Human set:** drawn as a stratified random sample with recorded inclusion probabilities. Once human labels
+    exist, judge-based estimates can be corrected with prediction-powered inference or design-based supervised
+    learning (Egami et al. 2023).
+  - **RL reporting:**
+    - Goodhart curves (Gao et al. 2023): M1, M2, M3 and M5b divergence against KL to the reference.
+    - Per-seed results, the mean and the range. With 3 seeds, an IQM is not meaningful.
+    - The loss divides by the batch's total completion tokens. This is a constant per batch, close to the
+      Dr. GRPO constant normalisation. Advantages are not divided by the standard deviation. Unit tests cover the
+      advantage and reward computations.
+  - **Release:** synthetic tweets are labelled as synthetic everywhere. The paper recommends that real tweets be
+    released as IDs only, per X's terms. The repository currently holds full text from the source dataset (flagged
+    to the authors).

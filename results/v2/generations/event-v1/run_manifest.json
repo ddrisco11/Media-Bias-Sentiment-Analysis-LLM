@@ -1,0 +1,24 @@
+{
+  "condition": "event-v1",
+  "model": "claude-haiku-5-5",
+  "template": "It is {date}, during the US presidential campaign. Write one tweet that {voice} might post on its main X account about this news: {event} Reply with only the tweet text: 280 characters or fewer, no links, no hashtags.",
+  "params": {
+    "thinking": {
+      "type": "disabled"
+    },
+    "output_config": {
+      "effort": "medium"
+    }
+  },
+  "events": 77,
+  "repeats": 3,
+  "requests": 1386,
+  "voices": {
+    "nytimes": "The New York Times (@nytimes)",
+    "foxnews": "Fox News (@FoxNews)",
+    "reuters": "Reuters (@Reuters)",
+    "ap": "Associated Press (@AP)",
+    "abc": "ABC News (@ABC)",
+    "neutral": "a US news organization"
+  }
+}

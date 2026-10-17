@@ -1,0 +1,50 @@
+{
+  "source": "dataset/annotated_tweets.jsonl",
+  "source_sha256": "2ac02cb334ddcb4a5b4fe0ddc82e85167ec5467e84fe93a676aa2241523b1f18",
+  "created_at": "2026-10-17T02:43:02.998169+00:00",
+  "rows": 2500,
+  "included": 2282,
+  "exclusion_counts": {
+    "duplicate_within_outlet": 45,
+    "opinion_or_analysis": 68,
+    "live_or_video_promo": 46,
+    "reply": 25,
+    "non_english": 22,
+    "before_2024": 7,
+    "thread_continuation": 9
+  },
+  "by_outlet": {
+    "abc": {
+      "all": 500,
+      "included": 476
+    },
+    "ap": {
+      "all": 500,
+      "included": 479
+    },
+    "foxnews": {
+      "all": 500,
+      "included": 467
+    },
+    "nytimes": {
+      "all": 500,
+      "included": 417
+    },
+    "reuters": {
+      "all": 500,
+      "included": 443
+    }
+  },
+  "rules": {
+    "non_english": "source lang is not \"en\"",
+    "reply": "in_reply_to_status_id_str or in_reply_to_screen_name set",
+    "thread_continuation": "conversationId differs from the tweet ID (by more than 2048 when stored as a float)",
+    "before_2024": "source date before 2024-01-01",
+    "live_or_video_promo": "\\bwatch live\\b|^\\s*live\\s*:|^\\s*watch\\s*:|\\blive coverage\\b|\\bwatch now\\b",
+    "quote_led (flag only)": "^\\W{0,3}[\"“‘\\']|^(\\S+\\s+){0,14}\\S*\\b(says|said)\\b",
+    "period": "P1 < 2024-07-21 <= P2 <= 2024-11-05 < P3",
+    "retweet": "retweetedTweet true or text starts with \"RT @\"",
+    "opinion_or_analysis": "@nytopinion|\\bopinion\\s*[:|]|\\bop-ed\\b|\\bnews analysis\\s*:|^\\s*analysis\\s*:|\\bin @nytopinion",
+    "duplicate_within_outlet": "same outlet and identical normalized text (links, quotes, punctuation, case removed); first by date kept"
+  }
+}

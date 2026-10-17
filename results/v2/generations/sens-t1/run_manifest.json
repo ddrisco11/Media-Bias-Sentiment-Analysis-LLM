@@ -1,0 +1,49 @@
+{
+  "condition": "sens-t1",
+  "model": "claude-haiku-5-5",
+  "params": {
+    "thinking": {
+      "type": "disabled"
+    },
+    "output_config": {
+      "effort": "medium"
+    }
+  },
+  "max_tokens": 4096,
+  "templates": {
+    "t1": "During the 2024 US presidential campaign, {voice} posts a tweet on its main X account about {topic}. Write that tweet. Output only the tweet text (at most 280 characters, without links or hashtags)."
+  },
+  "voices": {
+    "nytimes": "The New York Times (@nytimes)",
+    "foxnews": "Fox News (@FoxNews)",
+    "reuters": "Reuters (@Reuters)",
+    "ap": "Associated Press (@AP)",
+    "abc": "ABC News (@ABC)",
+    "neutral": "a US news organization"
+  },
+  "topic_wording": {
+    "president": "the president and the presidential candidates",
+    "elections": "voting and the election",
+    "crime and justice": "crime, courts and policing",
+    "gun issues": "guns and gun laws",
+    "foreign affairs": "foreign policy and international conflicts",
+    "immigration": "immigration and the border",
+    "economy": "the economy",
+    "race and civil rights": "race and civil rights",
+    "healthcare": "health care and public health",
+    "gender rights": "gender identity and LGBTQ issues",
+    "reproductive rights": "abortion",
+    "education": "schools and education policy",
+    "technology": "technology and AI",
+    "environment": "climate and energy policy"
+  },
+  "seed": 20241016,
+  "requests": 840,
+  "system_prompt": null,
+  "sampling": "API defaults",
+  "month_weights": null,
+  "packages": {
+    "anthropic": "1.15.0"
+  },
+  "started_at": "2026-10-17T02:49:12.670668+00:00"
+}

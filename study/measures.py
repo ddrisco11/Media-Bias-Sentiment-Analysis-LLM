@@ -5,6 +5,7 @@ Measures:
   leaning_heldout  M3, premsa/political-bias-prediction-allsides-DeBERTa (evaluation only; never a reward)
   loaded           M3b, mediabiasgroup/magpie-babe-ft (sentence-level biased/loaded wording, no direction)
   topic            GLiNER2 topic classifier with the project taxonomy
+  political        M5b, mlburnham/Political_DEBATE_large_v1.0: P("This text is about politics.")
 
 Usage: python -m study.measures --input results/v2/real/real_tweets.jsonl --measures leaning leaning_heldout loaded topic
 Cached results live in results/v2/scores/<measure>.jsonl keyed by sha256 of the scored text.
@@ -108,7 +109,32 @@ def score(texts, measures, batch_size=32, log=print):
     return results
 
 
+POLITICAL_MODEL = 'mlburnham/Political_DEBATE_large_v1.0'
+POLITICAL_HYPOTHESIS = 'This text is about politics.'
+
+
+def politicalness(texts, batch_size=32):
+    """M5b: P(entailment) of "This text is about politics." under Political DEBATE (labels: 0 entailment)."""
+    import torch
+    from transformers import AutoModelForSequenceClassification, AutoTokenizer
+    dev = device()
+    tok = AutoTokenizer.from_pretrained(POLITICAL_MODEL)
+    model = AutoModelForSequenceClassification.from_pretrained(POLITICAL_MODEL).to(dev).eval()
+    if model.config.id2label[0] != 'entailment':
+        raise RuntimeError('unexpected Political DEBATE label order')
+    out = []
+    for i in range(0, len(texts), batch_size):
+        enc = tok(texts[i:i + batch_size], [POLITICAL_HYPOTHESIS] * len(texts[i:i + batch_size]), padding=True,
+                  truncation=True, max_length=512, return_tensors='pt').to(dev)
+        with torch.no_grad():
+            p = model(**enc).logits.float().softmax(-1)[:, 0].cpu().tolist()
+        out += [{'p_political': x} for x in p]
+    return out
+
+
 def score_measure(measure, texts, batch_size):
+    if measure == 'political':
+        return politicalness(texts, batch_size)
     if measure == 'topic':
         from topic_classification import TopicClassifier
         classifier = TopicClassifier(device=device())

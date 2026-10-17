@@ -8,3 +8,8 @@ __pycache__/
 .env.*
 *.key
 results/v2/scores/*.tmp
+
+# RL adapters and checkpoints are never committed or released
+artifacts/
+results/v2/*.log
+results/v2/rl/logs/

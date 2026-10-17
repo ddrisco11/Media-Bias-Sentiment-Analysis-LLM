@@ -1,0 +1,197 @@
+{
+  "run": "calibrated-s0-timing05",
+  "condition": "calibrated",
+  "seed": 0,
+  "model": "Qwen/Qwen2.5-0.5B-Instruct",
+  "config": {
+    "group_size": 8,
+    "prompts_per_step": 10,
+    "lr": 2e-05,
+    "beta": 0.05,
+    "kappa": 16,
+    "steps": 10,
+    "warmup": 10,
+    "clip": 1.0,
+    "lora_r": 16,
+    "lora_alpha": 32,
+    "max_new_tokens": 96,
+    "temperature": 1.0,
+    "init_samples_per_outlet": 200,
+    "checkpoints": [
+      50,
+      100,
+      200,
+      300
+    ]
+  },
+  "targets_used": {
+    "nytimes": {
+      "left": 0.5,
+      "center": 0.30714285714285716,
+      "right": 0.19285714285714287
+    },
+    "foxnews": {
+      "left": 0.13191489361702127,
+      "center": 0.10851063829787234,
+      "right": 0.7595744680851064
+    },
+    "reuters": {
+      "left": 0.23766816143497757,
+      "center": 0.5336322869955157,
+      "right": 0.22869955156950672
+    },
+    "ap": {
+      "left": 0.31742738589211617,
+      "center": 0.24481327800829875,
+      "right": 0.43775933609958506
+    },
+    "abc": {
+      "left": 0.4509394572025052,
+      "center": 0.20041753653444677,
+      "right": 0.348643006263048
+    }
+  },
+  "real_targets": {
+    "nytimes": {
+      "left": 0.5,
+      "center": 0.30714285714285716,
+      "right": 0.19285714285714287
+    },
+    "foxnews": {
+      "left": 0.13191489361702127,
+      "center": 0.10851063829787234,
+      "right": 0.7595744680851064
+    },
+    "reuters": {
+      "left": 0.23766816143497757,
+      "center": 0.5336322869955157,
+      "right": 0.22869955156950672
+    },
+    "ap": {
+      "left": 0.31742738589211617,
+      "center": 0.24481327800829875,
+      "right": 0.43775933609958506
+    },
+    "abc": {
+      "left": 0.4509394572025052,
+      "center": 0.20041753653444677,
+      "right": 0.348643006263048
+    }
+  },
+  "real_counts": {
+    "nytimes": {
+      "left": 209,
+      "center": 128,
+      "right": 80
+    },
+    "foxnews": {
+      "right": 356,
+      "left": 61,
+      "center": 50
+    },
+    "reuters": {
+      "center": 237,
+      "right": 101,
+      "left": 105
+    },
+    "ap": {
+      "right": 210,
+      "left": 152,
+      "center": 117
+    },
+    "abc": {
+      "left": 215,
+      "center": 95,
+      "right": 166
+    }
+  },
+  "pooled_target": {
+    "left": 0.325164113785558,
+    "center": 0.274835886214442,
+    "right": 0.4
+  },
+  "topic_mix": {
+    "nytimes": {
+      "president": 0.31413612565445026,
+      "elections": 0.3010471204188482,
+      "crime and justice": 0.14397905759162305,
+      "gun issues": 0.05235602094240838,
+      "foreign affairs": 0.0549738219895288,
+      "race and civil rights": 0.04450261780104712,
+      "healthcare": 0.034031413612565446,
+      "reproductive rights": 0.015706806282722512,
+      "education": 0.007853403141361256,
+      "technology": 0.031413612565445025
+    },
+    "foxnews": {
+      "president": 0.5201900237529691,
+      "elections": 0.22802850356294538,
+      "crime and justice": 0.0855106888361045,
+      "gun issues": 0.04513064133016627,
+      "foreign affairs": 0.035629453681710214,
+      "race and civil rights": 0.047505938242280284,
+      "healthcare": 0.007125890736342043,
+      "reproductive rights": 0.007125890736342043,
+      "education": 0.021377672209026127,
+      "technology": 0.0023752969121140144
+    },
+    "reuters": {
+      "president": 0.3496143958868895,
+      "elections": 0.2647814910025707,
+      "crime and justice": 0.11825192802056556,
+      "gun issues": 0.06426735218508997,
+      "foreign affairs": 0.12339331619537275,
+      "race and civil rights": 0.02056555269922879,
+      "healthcare": 0.015424164524421594,
+      "reproductive rights": 0.010282776349614395,
+      "education": 0.005141388174807198,
+      "technology": 0.028277634961439587
+    },
+    "ap": {
+      "president": 0.4288990825688073,
+      "elections": 0.2775229357798165,
+      "crime and justice": 0.10779816513761468,
+      "gun issues": 0.08027522935779817,
+      "foreign affairs": 0.02981651376146789,
+      "race and civil rights": 0.034403669724770644,
+      "healthcare": 0.011467889908256881,
+      "reproductive rights": 0.013761467889908258,
+      "education": 0.013761467889908258,
+      "technology": 0.0022935779816513763
+    },
+    "abc": {
+      "president": 0.4419134396355353,
+      "elections": 0.2255125284738041,
+      "crime and justice": 0.15261958997722094,
+      "gun issues": 0.05239179954441914,
+      "foreign affairs": 0.04555808656036447,
+      "race and civil rights": 0.02733485193621868,
+      "healthcare": 0.03416856492027335,
+      "reproductive rights": 0.00683371298405467,
+      "education": 0.00683371298405467,
+      "technology": 0.00683371298405467
+    }
+  },
+  "train_topics": [
+    "president",
+    "elections",
+    "crime and justice",
+    "gun issues",
+    "foreign affairs",
+    "race and civil rights",
+    "healthcare",
+    "reproductive rights",
+    "education",
+    "technology"
+  ],
+  "held_out_topics": [
+    "immigration",
+    "economy",
+    "gender rights",
+    "environment"
+  ],
+  "template": "It is 2024, during the US presidential campaign. Write one tweet that {voice} might post on its main X account about {topic}. Reply with only the tweet text: 280 characters or fewer, no links, no hashtags.",
+  "started_at": "2026-10-17T03:01:22.216402+00:00",
+  "derangement": null,
+  "note": "Qwen chat template inserts its default system prompt; MPS is not bit-deterministic."
+}

@@ -1,0 +1,94 @@
+{
+  "created_at": "2026-10-17T03:15:21.304872+00:00",
+  "generation": {
+    "results/v2/generations/sens-t3/generations.jsonl": {
+      "unique_prompts": 84,
+      "prompts_with_terms": 0,
+      "examples": {}
+    },
+    "results/v2/generations/sens-t2/generations.jsonl": {
+      "unique_prompts": 84,
+      "prompts_with_terms": 0,
+      "examples": {}
+    },
+    "results/v2/generations/sens-baseline/generations.jsonl": {
+      "unique_prompts": 28,
+      "prompts_with_terms": 0,
+      "examples": {}
+    },
+    "results/v2/generations/model-sonnet/generations.jsonl": {
+      "unique_prompts": 84,
+      "prompts_with_terms": 0,
+      "examples": {}
+    },
+    "results/v2/generations/event-v1/generations.jsonl": {
+      "unique_prompts": 462,
+      "prompts_with_terms": 0,
+      "examples": {}
+    },
+    "results/v2/generations/sens-ref/generations.jsonl": {
+      "unique_prompts": 84,
+      "prompts_with_terms": 0,
+      "examples": {}
+    },
+    "results/v2/generations/five-voice/generations.jsonl": {
+      "unique_prompts": 135,
+      "prompts_with_terms": 0,
+      "examples": {}
+    },
+    "results/v2/generations/sens-t1/generations.jsonl": {
+      "unique_prompts": 84,
+      "prompts_with_terms": 0,
+      "examples": {}
+    },
+    "results/v2/generations/sens-month/generations.jsonl": {
+      "unique_prompts": 408,
+      "prompts_with_terms": 0,
+      "examples": {}
+    },
+    "results/v2/generations/model-opus/generations.jsonl": {
+      "unique_prompts": 84,
+      "prompts_with_terms": 0,
+      "examples": {}
+    },
+    "dataset/synthetic/main-v1/generations.jsonl": {
+      "unique_prompts": 84,
+      "prompts_with_terms": 0,
+      "examples": {}
+    },
+    "dataset/synthetic/pilot-v1/generations.jsonl": {
+      "unique_prompts": 84,
+      "prompts_with_terms": 0,
+      "examples": {}
+    },
+    "study/rl.py TEMPLATE": {
+      "unique_prompts": 1,
+      "prompts_with_terms": 0,
+      "examples": {}
+    }
+  },
+  "judge_inputs": {
+    "results/v2/judge/claude-sonnet-5-5/all-v2/rate/items.jsonl": {
+      "items": 13718,
+      "fields": [
+        "flipped",
+        "item",
+        "masked_text"
+      ],
+      "label_fields_present": [],
+      "unmasked_outlet_mentions": 0
+    },
+    "results/v2/judge/claude-sonnet-5-5/id-v2/identify/items.jsonl": {
+      "items": 7711,
+      "fields": [
+        "flipped",
+        "item",
+        "masked_text"
+      ],
+      "label_fields_present": [],
+      "unmasked_outlet_mentions": 0
+    }
+  },
+  "human_sheets": {},
+  "passed": true
+}

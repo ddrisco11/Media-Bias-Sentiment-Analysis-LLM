@@ -1,0 +1,59 @@
+{
+  "condition": "sens-month",
+  "model": "claude-haiku-5-5",
+  "params": {
+    "thinking": {
+      "type": "disabled"
+    },
+    "output_config": {
+      "effort": "medium"
+    }
+  },
+  "max_tokens": 4096,
+  "templates": {
+    "month": "It is {month} 2024, during the US presidential election season. Write one tweet that {voice} might post on its main X account about {topic}. Reply with only the tweet text: 280 characters or fewer, no links, no hashtags."
+  },
+  "voices": {
+    "nytimes": "The New York Times (@nytimes)",
+    "foxnews": "Fox News (@FoxNews)",
+    "reuters": "Reuters (@Reuters)",
+    "ap": "Associated Press (@AP)",
+    "abc": "ABC News (@ABC)",
+    "neutral": "a US news organization"
+  },
+  "topic_wording": {
+    "president": "the president and the presidential candidates",
+    "elections": "voting and the election",
+    "crime and justice": "crime, courts and policing",
+    "gun issues": "guns and gun laws",
+    "foreign affairs": "foreign policy and international conflicts",
+    "immigration": "immigration and the border",
+    "economy": "the economy",
+    "race and civil rights": "race and civil rights",
+    "healthcare": "health care and public health",
+    "gender rights": "gender identity and LGBTQ issues",
+    "reproductive rights": "abortion",
+    "education": "schools and education policy",
+    "technology": "technology and AI",
+    "environment": "climate and energy policy"
+  },
+  "seed": 20241016,
+  "requests": 840,
+  "system_prompt": null,
+  "sampling": "API defaults",
+  "month_weights": {
+    "February": 1,
+    "April": 2,
+    "May": 162,
+    "June": 298,
+    "July": 776,
+    "August": 249,
+    "September": 285,
+    "October": 75,
+    "November": 434
+  },
+  "packages": {
+    "anthropic": "1.15.0"
+  },
+  "started_at": "2026-10-17T02:55:10.668658+00:00"
+}
