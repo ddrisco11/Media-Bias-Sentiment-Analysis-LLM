@@ -21,6 +21,13 @@ SELF_REFERENCE = [
     r'\b(?:Stay|Follow along|Tune in|Watch|Read more|Read|Join us|Follow) (?:with|on|at|to) \[OUTLET\]',
 ]
 MASK = '[OUTLET]'
+# Added 2026-10-16 after the first judging round revealed residual outlet cues: outlet sub-brands and products, and
+# polling partners that identify the outlet. Every @handle is masked too (journalists' and sub-brand accounts reveal
+# the outlet, e.g. @DavidMuir, @kilmeade, @ABCPolitics, @Breakingviews).
+OUTLET_PATTERNS += [r'\bBreakingviews\b', r'\bVoteCast\b', r'\bFiveThirtyEight\b', r'\b538\b', r'\bThe Upshot\b',
+                    r'\bThe Athletic\b', r'\bWirecutter\b']
+POLLSTERS = re.compile(r'\b(Ipsos|Siena(?: College)?|SSRS|Beacon Research|Shaw & Company|NORC)\b', re.I)
+HANDLE = re.compile(r'@\w+')
 _outlets = re.compile('|'.join(OUTLET_PATTERNS), re.I)
 _self = re.compile('|'.join(SELF_REFERENCE), re.I)
 
@@ -28,6 +35,8 @@ _self = re.compile('|'.join(SELF_REFERENCE), re.I)
 def mask_outlets(text):
     text = scoring_text(text)
     text = _outlets.sub(MASK, text)
+    text = HANDLE.sub('@[ACCOUNT]', text)
+    text = POLLSTERS.sub('[POLLSTER]', text)
     text = _self.sub(lambda m: re.sub(r'\b(?:our|my)\b', "[OUTLET]'s", m.group(0), flags=re.I)
                      if m.group(0).lower().startswith(('our', 'my')) else m.group(0), text)
     return re.sub(r'(\[OUTLET\]\s*){2,}', MASK + ' ', text).strip()

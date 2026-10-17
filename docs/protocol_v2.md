@@ -391,3 +391,18 @@ overlap with the member tweets is reported.
   - **Release:** synthetic tweets are labelled as synthetic everywhere. The paper recommends that real tweets be
     released as IDs only, per X's terms. The repository currently holds full text from the source dataset (flagged
     to the authors).
+- 2026-10-17, v2.4, deviations during execution. These are numerical and procedural, and were decided before any RL
+  evaluation output existed:
+  - **RL precision:** the first RL launch used bf16 weights. One run (format-only, seed 1) crashed at step 19 with
+    NaN sampling probabilities on MPS. All runs were stopped and restarted in fp32 for every condition, so
+    conditions stay identical. The aborted logs are kept in `results/v2/rl/aborted_bf16/`.
+  - **Intermediate checkpoints:** steps 50, 100 and 200 are evaluated on smaller samples (5 per outlet × training
+    topic, 10 per outlet × held-out topic) and are used only for the Goodhart curves. The pre-registered final
+    checkpoint (step 300) gets the full evaluation.
+  - **Masking strengthened after the first judging round:** all @handles, outlet sub-brands (Breakingviews,
+    VoteCast) and polling partners (Ipsos, Siena) are now masked. 148 of 13,718 items changed and were re-judged.
+    Judge inputs for every analysis use the final masking.
+  - **Qwen2.5-7B judge (M2c):** uses the normal, unflipped instrument for every item. In a first pass, 12 of its
+    first 40 replies were invalid and it appeared to mishandle the reversed scale. The flip exists only to detect
+    order effects in the primary judge (M2), where they were negligible. The local judge was also paused while
+    RL trained, because the two processes competed for the GPU.

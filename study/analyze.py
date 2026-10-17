@@ -125,8 +125,8 @@ def h1_rules(main, variants):
             out['robust'][f'{v}:{m}'] = {'variants_matching': sum(signs), 'of': len(signs),
                                          'robust': bool(sum(signs) >= 4 and pooled and (pooled['ci95'][0] > 0 or pooled['ci95'][1] < 0))}
             if pooled:
-                z = pooled['estimate'] / pooled['se']
-                ps.append(math.erfc(abs(z) / math.sqrt(2)))
+                z = pooled['estimate'] / pooled['se'] if pooled['se'] > 0 else 0.0
+                ps.append(math.erfc(abs(z) / math.sqrt(2)) if abs(pooled['estimate']) > 1e-9 else 1.0)
                 labels.append(f'{v}:{m}')
     for lab, p in zip(labels, holm(ps)):
         out['robust'][lab]['pooled_p_holm'] = float(p)
@@ -417,6 +417,27 @@ def fightin_words(units, top=20, alpha0=1000):
     return out
 
 
+def external_benchmarks(main, rq2):
+    """Rank agreement (n = 5, descriptive only) between published outlet ratings and (a) real-tweet levels,
+    (b) generated-voice levels, under M1 and the judge."""
+    import json
+    from scipy.stats import kendalltau, spearmanr
+    ext = json.loads((RESULTS / 'external' / 'ratings.json').read_text())['ratings']
+    out = {}
+    for name, r in ext.items():
+        ref = [r['values'][o] for o in OUTLETS]
+        out[name] = {}
+        for m in PRIMARY:
+            real = [rq2[o]['real_level'][m]['estimate'] for o in OUTLETS]
+            gen = [main['levels'][o][m]['estimate'] for o in OUTLETS]
+            out[name][m] = {'spearman_real': float(spearmanr(ref, real)[0]), 'spearman_generated': float(spearmanr(ref, gen)[0]),
+                            'kendall_real': float(kendalltau(ref, real)[0]), 'kendall_generated': float(kendalltau(ref, gen)[0]),
+                            'rank_external': [o for _, o in sorted(zip(ref, OUTLETS))],
+                            'rank_real': [o for _, o in sorted(zip(real, OUTLETS))],
+                            'rank_generated': [o for _, o in sorted(zip(gen, OUTLETS))]}
+    return out
+
+
 def real_topic_weights(units):
     c = Counter(u['predicted_topic'] for u in units if u['source'] == 'real' and u['included'] and u['predicted_topic'] in TOPICS)
     n = sum(c.values())
@@ -450,6 +471,7 @@ def main():
     res['kitagawa_slant'] = kitagawa(units, metric='slant')
     res['kitagawa_m1'] = kitagawa(units, metric='m1_net')
     res['fightin_words'] = fightin_words(units)
+    res['external'] = external_benchmarks(res['rq1_main'], res['rq2_all'])
     if 'individuation' not in args.skip:
         print('individuation'); res['individuation'] = individuation(units)
     write_json(RESULTS / 'analysis' / 'results.json', res)

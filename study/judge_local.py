@@ -1,4 +1,7 @@
-"""Non-Claude judge (M2c): Qwen2.5-7B-Instruct run locally with the same rubric, masking and flipping as M2.
+"""Non-Claude judge (M2c): Qwen2.5-7B-Instruct run locally with the same rubric and masking as M2.
+
+Unlike M2, every item uses the normal (unflipped) instrument: in a first pass the 7B model mishandled the reversed
+scale (12 of 40 replies invalid), and the flip exists only to detect order effects in the primary judge.
 
 The JSON reply is validated against the same schema rules. Invalid replies get one retry, then count as missing.
 Usage: python -m study.judge_local --items results/v2/human/human_set.jsonl
@@ -9,7 +12,7 @@ import json
 import re
 
 from study.common import RESULTS, read_jsonl, write_jsonl
-from study.judge import FLIP_NOTE, GENRES, RUBRIC, is_flipped, unflip
+from study.judge import FLIP_NOTE, GENRES, RUBRIC
 
 MODEL = 'Qwen/Qwen2.5-7B-Instruct'
 FORMAT = ('\n\nReply with a single JSON object and nothing else, with keys in this order: "rationale" (one sentence), '
@@ -45,12 +48,12 @@ def main():
     done = {r['custom_id'] for r in read_jsonl(out_dir / 'results.jsonl')} if (out_dir / 'results.jsonl').exists() else set()
     rows = read_jsonl(out_dir / 'results.jsonl') if done else []
     todo = [it for it in items if it['item'] not in done]
-    write_jsonl(out_dir / 'items.jsonl', [{'item': it['item'], 'masked_text': it['masked_text'], 'flipped': is_flipped(it['masked_text'])} for it in items])
+    write_jsonl(out_dir / 'items.jsonl', [{'item': it['item'], 'masked_text': it['masked_text'], 'flipped': False} for it in items])
     for start in range(0, len(todo), 8):
         batch = todo[start:start + 8]
         prompts = []
         for it in batch:
-            flipped = is_flipped(it['masked_text'])
+            flipped = False
             sk, vk = keys(flipped)
             user = f'Post to rate:\n"""{it["masked_text"]}"""' + (FLIP_NOTE if flipped else '') + \
                 FORMAT.format(genres=', '.join(GENRES), stance_keys=sk, valence_keys=vk)

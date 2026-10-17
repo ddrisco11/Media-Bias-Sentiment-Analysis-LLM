@@ -106,7 +106,9 @@ def tost_equivalent(ci90, margin):
 
 def random_effects(estimates, ses):
     """DerSimonian-Laird pooled estimate, 95% CI and tau^2."""
-    y, s = np.asarray(estimates, float), np.asarray(ses, float)
+    y = np.asarray(estimates, float)
+    # Cells where the judge rated every tweet 0 give a bootstrap SE of exactly 0; floor it so pooling is defined.
+    s = np.maximum(np.asarray(ses, float), 1e-6)
     w = 1 / s ** 2
     fixed = np.sum(w * y) / np.sum(w)
     q = np.sum(w * (y - fixed) ** 2)

@@ -106,7 +106,9 @@ class Policy:
         self.torch, self.device = torch, 'mps' if torch.backends.mps.is_available() else 'cpu'
         torch.manual_seed(seed)
         self.tokenizer = AutoTokenizer.from_pretrained(model_id, padding_side='left')
-        base = AutoModelForCausalLM.from_pretrained(model_id, torch_dtype=torch.bfloat16).to(self.device)
+        # fp32 throughout: bf16 sampling on MPS produced NaN probabilities once the policy drifted (first launch,
+        # 2026-10-16; those runs were aborted and restarted in fp32 for every condition).
+        base = AutoModelForCausalLM.from_pretrained(model_id, torch_dtype=torch.float32).to(self.device)
         base.generation_config.update(do_sample=True, temperature=CONFIG['temperature'], top_p=1.0, top_k=0,
                                       repetition_penalty=1.0)
         if lora:
@@ -224,7 +226,11 @@ def train(args):
     for step in range(1, args.steps + 1):
         t0 = time.time()
         jobs = build_prompts(rng, topic_mix)
-        texts, finished, batch = policy.sample([j['prompt'] for j in jobs], CONFIG['group_size'])
+        try:
+            texts, finished, batch = policy.sample([j['prompt'] for j in jobs], CONFIG['group_size'])
+        except RuntimeError as error:  # includes torch.AcceleratorError (NaN/inf sampling probabilities)
+            write_json(out / 'failed.json', {'step': step, 'error': f'{type(error).__name__}: {str(error)[:300]}', 'at': now()})
+            raise
         G = CONFIG['group_size']
         outlets = [j['outlet'] for j in jobs for _ in range(G)]
         probs = reward_model.probabilities(texts)

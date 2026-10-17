@@ -44,7 +44,7 @@ def evaluate(run, step, n_train=20, n_held=50, final=False):
     seed = zlib.crc32(f"{run}:{step}".encode()) if not base else 20241016
     torch.manual_seed(seed)
     tok = AutoTokenizer.from_pretrained(BASE_MODEL, padding_side='left')
-    model = AutoModelForCausalLM.from_pretrained(BASE_MODEL, torch_dtype=torch.bfloat16).to('mps')
+    model = AutoModelForCausalLM.from_pretrained(BASE_MODEL, torch_dtype=torch.float32).to("mps")
     if not base:
         from peft import PeftModel
         model = PeftModel.from_pretrained(model, ROOT / 'artifacts' / 'rl' / run / f'step-{step}')
