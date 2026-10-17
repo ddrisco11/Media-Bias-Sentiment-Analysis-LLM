@@ -64,7 +64,9 @@ def generated_sources():
             ('pilot-v1', ROOT / 'dataset/synthetic/pilot-v1/generations.jsonl'),
             *[(c, g / c / 'generations.jsonl') for c in ['sens-ref', 'sens-t1', 'sens-t2', 'sens-t3', 'sens-month',
                                                          'sens-baseline', 'model-sonnet', 'model-opus', 'event-v1']],
-            ('five-voice', g / 'five-voice' / 'tweets.jsonl')]
+            ('five-voice', g / 'five-voice' / 'tweets.jsonl'),
+            ('model-qwen', RESULTS / 'rl_eval' / 'base' / 'step-0.jsonl'),
+            ('model-qwen-1.5b', RESULTS / 'rl_eval' / 'base-1.5b' / 'step-0.jsonl')]
 
 
 def build(cluster_threshold=0.5):
@@ -79,7 +81,11 @@ def build(cluster_threshold=0.5):
     for condition, path in generated_sources():
         if not path.exists():
             continue
-        for r in read_jsonl(path):
+        for i, r in enumerate(read_jsonl(path)):
+            if condition.startswith('model-qwen'):
+                if r.get('template') != 'v1':
+                    continue
+                r = {**r, 'id': f"{r['voice']}-{r['topic']}-{i}"}
             text = scoring_text(r.get('text') or '')
             if not text:
                 continue

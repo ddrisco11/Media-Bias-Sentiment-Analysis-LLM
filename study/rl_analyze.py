@@ -168,16 +168,21 @@ def report():
     base = res['evals'].get('base', {}).get(0)
     def cond(run):
         return run.rsplit('-s', 1)[0]
+
+    def size(run):
+        return '1.5b' if run.endswith('-1.5b') or run == 'base-1.5b' else '0.5b'
     contrasts = {}
-    for split in ('train', 'heldout', 't1'):
-        fmt = [final[r][split] for r in final if cond(r) == 'format' and split in final[r]]
+    for model_size in ('0.5b', '1.5b'):
+      base = res['evals'].get('base' if model_size == '0.5b' else 'base-1.5b', {}).get(0)
+      for split in ('train', 'heldout', 't1'):
+        fmt = [final[r][split] for r in final if cond(r) == 'format' and size(r) == model_size and split in final[r]]
         if not fmt:
             continue
         ref_tv = {k: np.mean([x[k] for x in fmt if x[k] is not None]) if any(x[k] is not None for x in fmt) else None
                   for k in ('tv_m1', 'tv_m3', 'tv_judge')}
         per_run = {}
         for r in final:
-            if cond(r) not in ('calibrated', 'shuffled', 'pooled') or split not in final[r]:
+            if cond(r) not in ('calibrated', 'shuffled', 'pooled') or size(r) != model_size or split not in final[r]:
                 continue
             x = final[r][split]
             shrink = {k: (ref_tv[k] - x[k]) / ref_tv[k] if (ref_tv[k] and x[k] is not None) else None for k in ref_tv}
@@ -190,7 +195,7 @@ def report():
                               'duplicates_up_gt_10pts': bool(base and split in base and x['duplicate_rate'] > base[split]['duplicate_rate'] + 0.10),
                               'names_masked_gain_halved': bool(ref_tv['tv_m1'] and x['tv_m1_names_masked'] is not None and
                                                                (ref_tv['tv_m1'] - x['tv_m1_names_masked']) < 0.5 * (ref_tv['tv_m1'] - x['tv_m1']))}}
-        contrasts[split] = {'format_reference_tv': ref_tv, 'runs': per_run}
+        contrasts[f'{model_size}:{split}'] = {'format_reference_tv': ref_tv, 'runs': per_run}
     res['h4_contrasts'] = contrasts
     res['real_reference'] = {o: {k: (v.tolist() if hasattr(v, 'tolist') else v) for k, v in ref[o].items() if k != 'texts'} for o in OUTLETS}
     write_json(RESULTS / 'analysis' / 'rl_results.json', res)

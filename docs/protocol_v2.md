@@ -453,3 +453,15 @@ overlap with the member tweets is reported.
   - **Order:** runs go in priority pairs: (calibrated-s1, format-s1), (calibrated-s2, shuffled-s1), (format-s2,
     pooled-s1), then calibrated-s3. Results are reported for whatever has completed, with the completed set stated.
   - **Evaluation:** intermediate checkpoints are 50 and 100. The step-200 checkpoint gets the full evaluation sample.
+- 2026-10-17, v2.7. Execution changes and additions, made before any RL evaluation output existed:
+  - **One GPU job at a time.** Two fp32 runs in parallel exhausted unified memory and stalled on swap. The stalled
+    calibrated-s1 run, at step 25, was discarded and is rerun from scratch. Running alone, a 0.5B step takes about
+    25 s.
+  - **Memory:** log-probabilities are computed in chunks of 4 rollouts, and the MPS cache is emptied every step.
+    Neither changes the training computation.
+  - **Exploratory scale check:** Qwen2.5-1.5B-Instruct, calibrated vs format-only, seed 1, 200 steps, run after the
+    pre-registered 0.5B set. Its base model is also evaluated.
+  - **Base models as generators:** the untrained base models (0.5B and 1.5B) are added to the portrayal analysis as
+    generators "model-qwen" and "model-qwen-1.5b" (exploratory), from their prompt-v1 evaluation samples.
+  - **Revisiting v1 (`study/v1_revisited.py`):** starting from v1's published comparison, apply one correction at a
+    time and report how each moves the outlet gaps.

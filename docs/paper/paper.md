@@ -310,6 +310,48 @@ Range restriction contributes: the judge rates 93% of event-conditioned tweets 0
 collapse does not show that the classifiers measure something the judge misses. It does show that the two kinds of
 measure cannot stand in for each other.
 
+### 7.4 Revisiting v1: one correction at a time
+v1 reported, for each outlet, the classifier's real score minus its "expected" (Haiku) score. Positive means the real
+outlet scores further right. Table 3 starts from v1's published numbers and applies the v2 corrections cumulatively,
+changing one thing per row. This also shows which kinds of mistake matter most in studies like this one.
+
+**Table 3.** Real minus expected, by correction step (M1 net, −100..+100; the judge rows use slant, −3..+3).
+95% bootstrap intervals in `results/v2/analysis/v1_revisited.json`.
+
+| Step | NYT | Fox News | Reuters | AP | ABC News | Center share, real / expected (range over outlets) |
+|---|---:|---:|---:|---:|---:|---|
+| S0. v1 as published | +1 | **+20** | −1 | **+28** | **+68** | 0–6% / 3–63% |
+| S1. Links removed from real tweets | **+12** | **+2** | +5 | +19 | +64 | 10–53% / 1–63% |
+| S2. Real sample cleaned | +13 | +8 | +6 | +19 | +64 | 11–53% / 1–63% |
+| S3. Same keyword selection for generated | +3 | **−25** | 0 | +12 | +64 | 11–53% / 2–79% |
+| S4. Only tweets naming both parties | +2 | −23 | −4 | +10 | +60 | 10–56% / 2–84% |
+| S5. Judge instead of M1 (S2 sample) | −0.23 | +0.06 | −0.05 | −0.08 | −0.07 | — |
+| S5b. Judge, only tweets naming both parties | −0.34 | **+0.63** | −0.04 | −0.17 | −0.23 | — |
+
+What each step teaches:
+- **The link artifact alone rewrote two of v1's three headline gaps.** Fox's +20 fell to +2. NYT's gap went from +1 to
+  +12. The "real tweets are almost never centrist" pattern disappeared: real center shares rose to 10–53%.
+- **Asymmetric selection biases the comparison.** v1 compared real tweets that passed an election-keyword filter
+  with generated tweets that mostly would not have. Applying the same filter to generated tweets flips Fox's gap to
+  −25: keyword-matching Fox-voice tweets are more extreme than real Fox under M1.
+- **ABC's +68 survives every data correction under M1 and disappears under the judge.** It is a property of how M1
+  reads the ABC voice's generic explainers and reminders, not of how the model portrays ABC.
+- **Under the judge, comparing like with like (S5b) gives the clearest picture.**
+  - **Real outlets are more partisan than the model's versions of them,** in both directions: real NYT −0.34, ABC
+    −0.23, AP −0.17 on the left; real Fox +0.63 on the right.
+  - **The model's outlet voices are close to neutral** whenever they name the parties.
+
+Three more lessons come from v1's supporting analyses:
+1. **Topic recognition.** v1 found the topic classifier recognised only 1 of 1,170 tweets requested as "president".
+   This follows from genre: the model writes about "the president and the presidential candidates" as generic
+   campaign roundups ("Biden and Trump are both pressing their cases…"). The topic model files these under elections
+   or under issues they list. Real "president" tweets report specific actions by named people.
+2. **Thinking mode.** With thinking on, Haiku declined 8% of outlet-voice requests. The declines clustered on ABC and
+   Reuters (19% each) and on gender and race topics (17–27%). Any thinking-on sample therefore under-represents
+   exactly those cells. All main analyses use thinking off.
+3. **Topic wording.** Requesting "voting and the election" produced voting reminders in every voice. That one choice
+   of wording accounts for about 23% of all generated tweets.
+
 ## 8. Results II: how the model portrays each outlet
 
 ### 8.1 Against the model's own neutral voice (RQ1)

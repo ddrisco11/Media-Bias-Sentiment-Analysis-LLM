@@ -274,6 +274,10 @@ def train(args):
               f"fail {record['format_fail_rate']:.2f} tv {sum(record['tv_q_to_real'].values())/5:.3f}", flush=True)
         if step in CONFIG['checkpoints'] or step == args.steps:
             policy.model.save_pretrained(adapters / f'step-{step}')
+        # Release cached MPS memory every step; two fp32 runs in parallel exhausted unified memory (v2.6 note).
+        del batch, logp_old, ref, kl_seq, adv
+        if torch.backends.mps.is_available():
+            torch.mps.empty_cache()
     log.close()
     write_json(out / 'finished.json', {'finished_at': now(), 'steps': args.steps})
 
@@ -287,7 +291,7 @@ def main():
     parser.add_argument('--lr', type=float, default=CONFIG['lr'])
     parser.add_argument('--beta', type=float, default=CONFIG['beta'])
     parser.add_argument('--tag', default='')
-    parser.add_argument('--chunk', type=int, default=16, help='Rollouts per forward/backward chunk (memory only)')
+    parser.add_argument('--chunk', type=int, default=4, help='Rollouts per forward/backward chunk (memory only)')
     parser.add_argument('--timing', action='store_true', help='Small initialisation for a feasibility/timing pilot')
     train(parser.parse_args())
 

@@ -11,6 +11,7 @@ Usage: python -m study.rl_eval --base
 Output: results/v2/rl_eval/<run>/step-<n>.jsonl
 """
 import argparse
+import json
 import random
 import zlib
 
@@ -20,6 +21,7 @@ from study.generate import TEMPLATES
 from study.rl import HELD_OUT_TOPICS, TEMPLATE, TRAIN_TOPICS, CONFIG, format_fail
 
 BASE_MODEL = 'Qwen/Qwen2.5-0.5B-Instruct'
+BASE_MODELS = {'base': BASE_MODEL, 'base-1.5b': 'Qwen/Qwen2.5-1.5B-Instruct'}
 FINAL_STEP = 200
 
 
@@ -41,11 +43,15 @@ def jobs(n_train, n_held, final, base):
 def evaluate(run, step, n_train=20, n_held=50, final=False):
     import torch
     from transformers import AutoModelForCausalLM, AutoTokenizer
-    base = run == 'base'
+    base = run.startswith('base')
     seed = zlib.crc32(f"{run}:{step}".encode()) if not base else 20241016
     torch.manual_seed(seed)
-    tok = AutoTokenizer.from_pretrained(BASE_MODEL, padding_side='left')
-    model = AutoModelForCausalLM.from_pretrained(BASE_MODEL, torch_dtype=torch.float32).to("mps")
+    if base:
+        model_id = BASE_MODELS[run]
+    else:
+        model_id = json.loads((RESULTS / 'rl' / run / 'manifest.json').read_text())['model']
+    tok = AutoTokenizer.from_pretrained(model_id, padding_side='left')
+    model = AutoModelForCausalLM.from_pretrained(model_id, torch_dtype=torch.float32).to("mps")
     if not base:
         from peft import PeftModel
         model = PeftModel.from_pretrained(model, ROOT / 'artifacts' / 'rl' / run / f'step-{step}')
@@ -92,10 +98,11 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument('--run')
     parser.add_argument('--base', action='store_true')
+    parser.add_argument('--base-name', default='base', choices=['base', 'base-1.5b'])
     parser.add_argument('--steps', nargs='+', type=int, default=[50, 100, 200, 300])
     args = parser.parse_args()
     if args.base:
-        evaluate('base', 0)
+        evaluate(args.base_name, 0)
         return
     for s in args.steps:
         # Intermediate checkpoints get a smaller sample; the final checkpoint (step 200 after the v2.6 feasibility
